@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music — 10desires.xyz</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .label-philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .label-philosophy-grid .gear-card.featured {
+            grid-column: 1 / -1;
+        }
+
+        .label-philosophy-grid .gear-card:not(.featured) {
+            max-width: 500px;
+        }
+
+        .philosophy-cards-wrapper {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .philosophy-cards-wrapper .gear-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .philosophy-cards-wrapper .gear-card {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <a href="/" class="nav-logo">10desires</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/gear">Gear</a></li>
+                    <li><a href="/coasters">Coasters</a></li>
+                    <li><a href="/music">Music</a></li>
+                </ul>
+                <button class="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="moon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+                    </svg>
+                    <svg class="sun-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu">
+        <ul>
+            <li><a href="/gear">Gear</a></li>
+            <li><a href="/coasters">Coasters</a></li>
+            <li><a href="/music">Music</a></li>
+        </ul>
+    </div>
+
+    <section class="hero hero-short">
+        <p class="hero-eyebrow">independent music collective</p>
+        <h1 class="hero-title hero-title-smaller">Zero Memories Faithful</h1>
+        <p class="hero-subtitle hero-subtitle-smaller">an umbrella for too many creative outlets. seven projects, countless sounds, all made in the same bedroom.</p>
+        <div class="hero-cta">
+            <a href="https://zeromemoriesfaithful.bandcamp.com/" class="btn-primary" target="_blank" rel="noopener">Listen on Bandcamp</a>
+        </div>
+    </section>
+
+    <section id="music">
+        <div class="section-container">
+            <p class="section-eyebrow">Projects</p>
+            <h2 class="section-title">way too many aliases.</h2>
+            <p class="section-subtitle">each project is its own vibe, its own universe. here's everything under the Zero Memories Faithful umbrella.</p>
+
+            <div class="projects-grid">
+                <div class="project-card sunsetter animate-on-scroll">
+                    <div class="project-icon">&#9728;&#65039;</div>
+                    <h3>Sunsetter</h3>
+                    <p class="genre">Shoegaze &middot; Post-rock</p>
+                    <p>guitar pedals go brrrr. dreamy, fuzzy, probably too much reverb (there's no such thing). wall-of-sound textures meet emotional post-rock builds.</p>
+                </div>
+
+                <div class="project-card vezzra animate-on-scroll">
+                    <div class="project-icon">&#9889;</div>
+                    <h3>Vezzra</h3>
+                    <p class="genre">Electronic &middot; DnB &middot; Jungle</p>
+                    <p>breakbeats, synths, and high-energy chaos. fast-paced drum and bass meets experimental electronic soundscapes. sometimes chill, usually not.</p>
+                </div>
+
+                <div class="project-card animate-on-scroll" style="--card-gradient: linear-gradient(135deg, #a8dadc, #f1faee);">
+                    <div class="project-icon" style="background: linear-gradient(135deg, #457b9d, #a8dadc);">&#127800;</div>
+                    <h3>chloe in memory</h3>
+                    <p class="genre">Lo-fi &middot; Tape Loop &middot; Ambient Indie</p>
+                    <p>soft, nostalgic, wrapped in tape hiss. lo-fi ambient indie built from worn-out loops and faded memories. cozy melancholy.</p>
+                </div>
+
+                <div class="project-card chimera animate-on-scroll">
+                    <div class="project-icon">&#127754;</div>
+                    <h3>Chimera Archives</h3>
+                    <p class="genre">Ambient &middot; Tape Loops &middot; Liminal Space</p>
+                    <p>for when you wanna zone out. big floaty soundscapes, liminal space vibes, perfect for 2am thinking sessions or getting lost in your thoughts.</p>
+                </div>
+
+                <div class="project-card spcc animate-on-scroll">
+                    <div class="project-icon">&#128758;</div>
+                    <h3>South Park Canoe Club</h3>
+                    <p class="genre">Emotionally Driven Instrumental Indie</p>
+                    <p>cozy instrumental stuff. like a warm blanket made of guitar loops and tape hiss. feelings without words, just vibes and textures.</p>
+                </div>
+
+                <div class="project-card animate-on-scroll" style="--card-gradient: linear-gradient(135deg, #e63946, #f1faee);">
+                    <div class="project-icon" style="background: linear-gradient(135deg, #e63946, #ff6b6b);">&#128165;</div>
+                    <h3>HABITS!</h3>
+                    <p class="genre">Lo-fi Noise &middot; Math Rock</p>
+                    <p>angular guitar riffs meet lo-fi grit. jagged time signatures, noisy textures, DIY energy. controlled chaos in the best way.</p>
+                </div>
+
+                <div class="project-card luna animate-on-scroll">
+                    <div class="project-icon">&#127769;</div>
+                    <h3>LUNALOVESYOU</h3>
+                    <p class="genre">Hyperpop &middot; Rage &middot; Wave &middot; Glitchcore</p>
+                    <p>chaos mode. loud, distorted, unhinged. if it sounds like the audio is breaking, that's the point. maximum energy, zero chill.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gear-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-icon">&#127899;&#65039;</span>
+                <h2 class="section-title">The Label Philosophy</h2>
+            </div>
+            <div class="gear-card featured animate-on-scroll" style="margin-bottom: 20px;">
+                <span class="gear-tag">Independent &amp; Proud</span>
+                <h3>Zero Memories Faithful</h3>
+                <p>a DIY record label that's really just me making too much music under different names. no rules, no genre limitations, just pure creative freedom. everything is recorded, mixed, and released from the same setup. raw, unfiltered, and unapologetically experimental.</p>
+            </div>
+            <div class="philosophy-cards-wrapper">
+                <div class="gear-card animate-on-scroll">
+                    <h3>Why So Many Projects?</h3>
+                    <p>because one outlet isn't enough. each project scratches a different creative itch. sometimes i wanna make peaceful ambient, sometimes i wanna make your ears bleed with hyperpop. why choose when you can do both?</p>
+                </div>
+                <div class="gear-card animate-on-scroll">
+                    <h3>The Process</h3>
+                    <p>bedroom producer aesthetic. everything's done in-house with whatever gear i have lying around. imperfections are features, not bugs. lo-fi is a lifestyle, not a limitation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="section-container">
+            <p class="section-eyebrow">Listen</p>
+            <h2 class="section-title">find it all on bandcamp.</h2>
+            <p class="section-subtitle">every project, every release, all in one place.</p>
+
+            <div class="about-content">
+                <p>Zero Memories Faithful is my independent label home for all these projects. everything's available on Bandcamp with free streaming and pay-what-you-want downloads. no gatekeeping, no paywalls, just music.</p>
+                <div style="margin-top: 40px;">
+                    <a href="https://zeromemoriesfaithful.bandcamp.com/" class="btn-primary" target="_blank" rel="noopener">Visit Zero Memories Faithful on Bandcamp</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/gear">Gear</a>
+                <a href="/coasters">Coasters</a>
+                <a href="/music">Music</a>
+            </div>
+            <p class="footer-copyright">&copy; 2025 10desires.xyz / 10desires</p>
+        </div>
+    </footer>
+
+    <script src="../main.js"></script>
+</body>
+</html>
