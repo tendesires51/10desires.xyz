@@ -953,11 +953,55 @@ footer {
     gap: 24px;
     align-items: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.4s ease, border-color 0.4s ease;
+    cursor: pointer;
 }
 
 .coaster-card:hover {
     transform: translateX(4px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.coaster-stats {
+    grid-column: 1 / -1;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.coaster-card.active .coaster-stats {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 16px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    transition: background 0.4s ease;
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.4s ease;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.4s ease;
 }
 
 [data-theme="dark"] .coaster-card:hover {
@@ -1025,12 +1069,112 @@ footer {
     font-size: 24px;
 }
 
+@keyframes borderTrail {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 200% 0%;
+    }
+}
+
 .coaster-card:nth-child(1) {
-    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(255, 215, 0, 0.05) 100%);
+    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(255, 215, 0, 0.1) 100%);
+    position: relative;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.coaster-card:nth-child(1)::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(90deg,
+        rgba(255, 215, 0, 0.8) 0%,
+        rgba(255, 215, 0, 0.4) 25%,
+        rgba(255, 215, 0, 0.1) 50%,
+        rgba(255, 215, 0, 0.4) 75%,
+        rgba(255, 215, 0, 0.8) 100%);
+    background-size: 200% 100%;
+    animation: borderTrail 3s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
 }
 
 [data-theme="dark"] .coaster-card:nth-child(1) {
-    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(255, 215, 0, 0.1) 100%);
+    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(255, 215, 0, 0.15) 100%);
+}
+
+.coaster-card:nth-child(2) {
+    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(255, 69, 58, 0.08) 100%);
+    position: relative;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.coaster-card:nth-child(2)::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(90deg,
+        rgba(255, 69, 58, 0.8) 0%,
+        rgba(255, 69, 58, 0.4) 25%,
+        rgba(255, 69, 58, 0.1) 50%,
+        rgba(255, 69, 58, 0.4) 75%,
+        rgba(255, 69, 58, 0.8) 100%);
+    background-size: 200% 100%;
+    animation: borderTrail 3s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+}
+
+[data-theme="dark"] .coaster-card:nth-child(2) {
+    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(255, 69, 58, 0.12) 100%);
+}
+
+.coaster-card:nth-child(3) {
+    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(100, 210, 255, 0.1) 100%);
+    position: relative;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.coaster-card:nth-child(3)::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(90deg,
+        rgba(100, 210, 255, 0.8) 0%,
+        rgba(100, 210, 255, 0.4) 25%,
+        rgba(100, 210, 255, 0.1) 50%,
+        rgba(100, 210, 255, 0.4) 75%,
+        rgba(100, 210, 255, 0.8) 100%);
+    background-size: 200% 100%;
+    animation: borderTrail 3s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+}
+
+[data-theme="dark"] .coaster-card:nth-child(3) {
+    background: linear-gradient(135deg, var(--coaster-card-bg) 0%, rgba(100, 210, 255, 0.15) 100%);
 }
 
 /* Tied entry styling */
@@ -1110,5 +1254,9 @@ footer {
 
     .coaster-card.top-3 .coaster-name {
         font-size: 19px;
+    }
+
+    .coaster-stats {
+        grid-template-columns: 1fr;
     }
 }

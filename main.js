@@ -83,3 +83,16 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Update nav background on scroll
 window.addEventListener('scroll', updateNavBackground);
+
+// Toggle coaster stats dropdown
+function toggleStats(card) {
+    // Close all other open dropdowns
+    document.querySelectorAll('.coaster-card.active').forEach(c => {
+        if (c !== card) {
+            c.classList.remove('active');
+        }
+    });
+
+    // Toggle the clicked card
+    card.classList.toggle('active');
+}
