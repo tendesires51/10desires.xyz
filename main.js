@@ -232,3 +232,49 @@ function initCookieBanner() {
 
 // Initialize cookie banner when DOM is loaded
 initCookieBanner();
+
+// ========================================
+// DEVELOPER CONSOLE DETECTOR
+// ========================================
+
+// Detect when developer console is opened
+(function() {
+    const devtools = /./;
+    devtools.toString = function() {
+        if (typeof trackDevConsoleOpen === 'function') {
+            trackDevConsoleOpen();
+        }
+        return '';
+    };
+
+    // Trigger the detector
+    console.log('%c', devtools);
+
+    // Alternative detection methods
+    let devtoolsOpen = false;
+    const threshold = 160;
+
+    const detectDevTools = () => {
+        if (window.outerWidth - window.innerWidth > threshold ||
+            window.outerHeight - window.innerHeight > threshold) {
+            if (!devtoolsOpen && typeof trackDevConsoleOpen === 'function') {
+                trackDevConsoleOpen();
+                devtoolsOpen = true;
+            }
+        }
+    };
+
+    // Check on resize
+    window.addEventListener('resize', detectDevTools);
+
+    // Also detect F12 keypress
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+            (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))) {
+            if (typeof trackDevConsoleOpen === 'function') {
+                setTimeout(trackDevConsoleOpen, 100);
+            }
+        }
+    });
+})();

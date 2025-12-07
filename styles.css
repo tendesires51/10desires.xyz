@@ -1669,6 +1669,24 @@ footer {
     animation: loadProgress 1.5s ease-in-out infinite;
 }
 
+/* Rainbow Loading Bar (Refresh Ranger Achievement Reward) */
+.loading-progress.rainbow-loading {
+    background: linear-gradient(90deg,
+        #1199FF 0%,
+        #EEAA00 25%,
+        #EE6622 50%,
+        #CC2255 75%,
+        #1199FF 100%);
+    background-size: 200% 100%;
+    animation: loadProgress 1.5s ease-in-out infinite,
+               rainbowLoadingShift 2s linear infinite;
+}
+
+@keyframes rainbowLoadingShift {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
 .loading-tip {
     margin-top: var(--spacing-lg);
     font-size: 14px;

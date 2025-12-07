@@ -134,33 +134,38 @@
 
 .achievement-banner {
     position: fixed;
-    bottom: -200px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 70px;
+    right: -400px;
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: var(--spacing-md);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     z-index: 10000;
     min-width: 320px;
-    max-width: 500px;
-    transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 380px;
+    transition: right 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .achievement-banner.show {
-    bottom: var(--spacing-lg);
+    right: var(--spacing-md);
 }
 
 .achievement-banner-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.achievement-banner-header {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
 }
 
 .achievement-icon {
-    font-size: 32px;
+    font-size: 40px;
     flex-shrink: 0;
 }
 
@@ -169,7 +174,7 @@
 }
 
 .achievement-title {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--accent);
     text-transform: uppercase;
@@ -179,24 +184,33 @@
 
 .achievement-description {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-primary);
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
-.achievement-close {
-    background: none;
+.achievement-get-button {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: white;
     border: none;
-    color: var(--text-secondary);
-    font-size: 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    padding: 4px;
-    line-height: 1;
-    transition: color 0.3s ease;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.achievement-close:hover {
-    color: var(--text-primary);
+.achievement-get-button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.achievement-get-button:active {
+    transform: translateY(0);
 }
 
 /* ========================================

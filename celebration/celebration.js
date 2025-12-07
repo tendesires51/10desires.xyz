@@ -76,7 +76,7 @@ function createAchievementCard(achievement, isUnlocked) {
         }
     }
 
-    // Add rainbow text toggle for Epilepsy Warning achievement
+    // Add toggles for achievement rewards
     let toggleHTML = '';
     if (isUnlocked && achievement.id === 'epilepsyWarning') {
         const isEnabled = typeof isRainbowTextEnabled === 'function' ? isRainbowTextEnabled() : true;
@@ -87,6 +87,17 @@ function createAchievementCard(achievement, isUnlocked) {
                     <span class="toggle-slider"></span>
                 </label>
                 <span class="toggle-label">Rainbow Text Effect</span>
+            </div>
+        `;
+    } else if (isUnlocked && achievement.id === 'loadingTipsMaster') {
+        const isEnabled = typeof isRainbowLoadingEnabled === 'function' ? isRainbowLoadingEnabled() : true;
+        toggleHTML = `
+            <div class="achievement-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="rainbow-loading-toggle" ${isEnabled ? 'checked' : ''}>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Rainbow Loading Bar</span>
             </div>
         `;
     }
@@ -102,7 +113,7 @@ function createAchievementCard(achievement, isUnlocked) {
         ${isUnlocked ? '<span class="achievement-badge">✓</span>' : ''}
     `;
 
-    // Add toggle event listener for rainbow text
+    // Add toggle event listeners for achievement rewards
     if (isUnlocked && achievement.id === 'epilepsyWarning') {
         // Need to wait for the card to be in DOM before adding listener
         setTimeout(() => {
@@ -115,6 +126,21 @@ function createAchievementCard(achievement, isUnlocked) {
                     e.stopPropagation(); // Prevent card click event
                     if (typeof toggleRainbowText === 'function') {
                         toggleRainbowText();
+                    }
+                });
+            }
+        }, 0);
+    } else if (isUnlocked && achievement.id === 'loadingTipsMaster') {
+        setTimeout(() => {
+            const toggle = card.querySelector('#rainbow-loading-toggle');
+            if (toggle) {
+                // Ensure toggle reflects current state
+                toggle.checked = typeof isRainbowLoadingEnabled === 'function' ? isRainbowLoadingEnabled() : true;
+
+                toggle.addEventListener('change', (e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    if (typeof toggleRainbowLoading === 'function') {
+                        toggleRainbowLoading();
                     }
                 });
             }
@@ -147,6 +173,9 @@ function resetAllAchievements() {
         localStorage.removeItem('seenTips');
         localStorage.removeItem('themeToggles');
         localStorage.removeItem('rainbowTextEnabled');
+        localStorage.removeItem('rainbowLoadingEnabled');
+        localStorage.removeItem('devConsoleOpened');
+        localStorage.removeItem('visited404');
         localStorage.removeItem('achievementUnlocked'); // Legacy support
 
         // Reload page to show updated state

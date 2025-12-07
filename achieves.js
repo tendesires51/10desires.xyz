@@ -31,6 +31,26 @@ const ACHIEVEMENTS = {
             return toggleData.count >= 50;
         }
     },
+    DEVELOPER_CONSOLE: {
+        id: 'developerConsole',
+        name: 'Stop right there, criminal scum!',
+        description: 'Opened the developer console in your browser',
+        icon: '👮',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('devConsoleOpened') === 'true';
+        }
+    },
+    NOT_FOUND: {
+        id: 'notFound',
+        name: "We're not in Kansas anymore...",
+        description: "Visited a page that doesn't exist",
+        icon: '🌪️',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('visited404') === 'true';
+        }
+    },
     // Add more achievements here:
     // EXAMPLE_ACHIEVEMENT: {
     //     id: 'exampleAchievement',
@@ -53,6 +73,7 @@ class AchievementManager {
     constructor() {
         this.achievements = ACHIEVEMENTS;
         this.unlockedAchievements = this.getUnlockedAchievements();
+        this.pendingAchievements = this.getPendingAchievements();
     }
 
     /**
@@ -71,10 +92,32 @@ class AchievementManager {
     }
 
     /**
+     * Get pending achievements (earned but not acknowledged)
+     */
+    getPendingAchievements() {
+        const pending = localStorage.getItem('pendingAchievements');
+        return pending ? JSON.parse(pending) : [];
+    }
+
+    /**
+     * Save pending achievements to localStorage
+     */
+    savePendingAchievements() {
+        localStorage.setItem('pendingAchievements', JSON.stringify(this.pendingAchievements));
+    }
+
+    /**
      * Check if an achievement is unlocked
      */
     isUnlocked(achievementId) {
         return this.unlockedAchievements.includes(achievementId);
+    }
+
+    /**
+     * Check if an achievement is pending acknowledgment
+     */
+    isPending(achievementId) {
+        return this.pendingAchievements.includes(achievementId);
     }
 
     /**
@@ -98,72 +141,86 @@ class AchievementManager {
     }
 
     /**
-     * Check all achievements and unlock any that meet conditions
+     * Acknowledge a pending achievement (actually unlock it)
+     */
+    acknowledgePending(achievementId) {
+        if (this.isPending(achievementId)) {
+            // Remove from pending
+            this.pendingAchievements = this.pendingAchievements.filter(id => id !== achievementId);
+            this.savePendingAchievements();
+
+            // Actually unlock it
+            return this.unlock(achievementId);
+        }
+        return false;
+    }
+
+    /**
+     * Check all achievements and add pending ones
      */
     checkAchievements() {
-        const newlyUnlocked = [];
+        const newlyPending = [];
 
         Object.values(this.achievements).forEach(achievement => {
-            if (!this.isUnlocked(achievement.id) && achievement.checkCondition()) {
-                if (this.unlock(achievement.id)) {
-                    newlyUnlocked.push(achievement);
-                }
+            // Only add to pending if not already unlocked and not already pending
+            if (!this.isUnlocked(achievement.id) && !this.isPending(achievement.id) && achievement.checkCondition()) {
+                this.pendingAchievements.push(achievement.id);
+                this.savePendingAchievements();
+                newlyPending.push(achievement);
             }
         });
 
-        return newlyUnlocked;
+        return newlyPending;
     }
 
     /**
      * Show achievement unlock banner
      */
     showAchievementBanner(achievement) {
-        // Check if banner already exists
-        let banner = document.querySelector('.achievement-banner');
+        // Calculate time since page load
+        const pageLoadTime = window.achievementPageLoadTime || Date.now();
+        const timeSinceLoad = Date.now() - pageLoadTime;
+        const delay = Math.max(0, 2000 - timeSinceLoad); // 2 second minimum delay
 
-        if (!banner) {
-            // Create banner element
-            banner = document.createElement('div');
-            banner.className = 'achievement-banner';
-            banner.innerHTML = `
-                <div class="achievement-banner-content">
-                    <div class="achievement-icon">${achievement.icon}</div>
-                    <div class="achievement-text">
-                        <div class="achievement-title">Achievement Unlocked!</div>
-                        <div class="achievement-description">${achievement.name}</div>
-                    </div>
-                    <button class="achievement-close" aria-label="Close">&times;</button>
-                </div>
-            `;
-            document.body.appendChild(banner);
-
-            // Add close button functionality
-            const closeBtn = banner.querySelector('.achievement-close');
-            closeBtn.addEventListener('click', () => {
-                banner.classList.remove('show');
-                setTimeout(() => banner.remove(), 500);
-            });
-
-            // Click banner to go to unlock page
-            banner.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('achievement-close')) {
-                    window.location.href = achievement.unlockPage;
-                }
-            });
-
-            banner.style.cursor = 'pointer';
-        }
-
-        // Show banner with animation
-        setTimeout(() => banner.classList.add('show'), 100);
-
-        // Auto-hide after 5 seconds
         setTimeout(() => {
-            if (banner && banner.classList.contains('show')) {
-                banner.classList.remove('show');
-                setTimeout(() => banner.remove(), 500);
+            // Check if banner already exists
+            let banner = document.querySelector('.achievement-banner');
+
+            if (!banner) {
+                // Create banner element with new structure
+                banner = document.createElement('div');
+                banner.className = 'achievement-banner';
+                banner.innerHTML = `
+                    <div class="achievement-banner-content">
+                        <div class="achievement-banner-header">
+                            <div class="achievement-icon">${achievement.icon}</div>
+                            <div class="achievement-text">
+                                <div class="achievement-title">Achievement Unlocked!</div>
+                                <div class="achievement-description">${achievement.name}</div>
+                            </div>
+                        </div>
+                        <button class="achievement-get-button">Get</button>
+                    </div>
+                `;
+                document.body.appendChild(banner);
+
+                // Add GET button functionality
+                const getBtn = banner.querySelector('.achievement-get-button');
+                getBtn.addEventListener('click', () => {
+                    // Acknowledge the achievement (actually unlock it)
+                    achievementManager.acknowledgePending(achievement.id);
+
+                    banner.classList.remove('show');
+                    setTimeout(() => {
+                        banner.remove();
+                        window.location.href = achievement.unlockPage;
+                    }, 500);
+                });
             }
-        }, 5000);
+
+            // Show banner with animation
+            setTimeout(() => banner.classList.add('show'), 100);
+        }, delay);
     }
 
     /**
@@ -172,6 +229,9 @@ class AchievementManager {
     resetAchievement(achievementId) {
         this.unlockedAchievements = this.unlockedAchievements.filter(id => id !== achievementId);
         this.saveUnlockedAchievements();
+        // Also remove from pending if it was pending
+        this.pendingAchievements = this.pendingAchievements.filter(id => id !== achievementId);
+        this.savePendingAchievements();
         // Update nav link when achievement is reset
         if (typeof updateAchievementNavLink === 'function') {
             updateAchievementNavLink();
@@ -187,7 +247,9 @@ class AchievementManager {
      */
     resetAll() {
         this.unlockedAchievements = [];
+        this.pendingAchievements = [];
         localStorage.removeItem('unlockedAchievements');
+        localStorage.removeItem('pendingAchievements');
         // Update nav link when all achievements are reset
         if (typeof updateAchievementNavLink === 'function') {
             updateAchievementNavLink();
@@ -238,10 +300,10 @@ function trackThemeToggle() {
 
     localStorage.setItem('themeToggles', JSON.stringify(toggleData));
 
-    // Check if achievement should be unlocked
+    // Check if achievement should be pending
     if (toggleData.count >= 50) {
-        const newlyUnlocked = achievementManager.checkAchievements();
-        newlyUnlocked.forEach(achievement => {
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
             if (achievement.id === 'epilepsyWarning') {
                 achievementManager.showAchievementBanner(achievement);
             }
@@ -263,13 +325,9 @@ function trackLoadingTip(tipIndex) {
         seenTips.push(tipIndex);
         localStorage.setItem('seenTips', JSON.stringify(seenTips));
 
-        // Check if achievement should be unlocked
-        const newlyUnlocked = achievementManager.checkAchievements();
-        newlyUnlocked.forEach(achievement => {
-            // Set legacy flag for backwards compatibility
-            if (achievement.id === 'loadingTipsMaster') {
-                localStorage.setItem('achievementUnlocked', 'true');
-            }
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
             achievementManager.showAchievementBanner(achievement);
         });
     }
@@ -286,6 +344,50 @@ function getLoadingTipProgress() {
         total: totalTips,
         percentage: Math.round((seenTips.length / totalTips) * 100)
     };
+}
+
+// ========================================
+// DEVELOPER CONSOLE ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track developer console opening
+ * This should be called from a detector in main.js
+ */
+function trackDevConsoleOpen() {
+    if (localStorage.getItem('devConsoleOpened') !== 'true') {
+        localStorage.setItem('devConsoleOpened', 'true');
+
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            if (achievement.id === 'developerConsole') {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        });
+    }
+}
+
+// ========================================
+// 404 PAGE ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track 404 page visit
+ * This should be called from the 404 page
+ */
+function track404Visit() {
+    if (localStorage.getItem('visited404') !== 'true') {
+        localStorage.setItem('visited404', 'true');
+
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            if (achievement.id === 'notFound') {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        });
+    }
 }
 
 // ========================================
@@ -341,10 +443,15 @@ function resetAchievementProgress(achievementId) {
         // Reset specific achievement data
         if (achievementId === 'loadingTipsMaster') {
             localStorage.removeItem('seenTips');
+            localStorage.removeItem('rainbowLoadingEnabled');
             localStorage.removeItem('achievementUnlocked'); // Legacy support
         } else if (achievementId === 'epilepsyWarning') {
             localStorage.removeItem('themeToggles');
             localStorage.removeItem('rainbowTextEnabled');
+        } else if (achievementId === 'developerConsole') {
+            localStorage.removeItem('devConsoleOpened');
+        } else if (achievementId === 'notFound') {
+            localStorage.removeItem('visited404');
         }
 
         // Redirect to home
@@ -389,20 +496,89 @@ function updateRainbowTextClass() {
 }
 
 // ========================================
+// RAINBOW LOADING BAR (Refresh Ranger Achievement)
+// ========================================
+
+/**
+ * Check if rainbow loading bar should be enabled
+ */
+function isRainbowLoadingEnabled() {
+    const isUnlocked = achievementManager.isUnlocked('loadingTipsMaster');
+    const isEnabled = localStorage.getItem('rainbowLoadingEnabled') !== 'false'; // default true when unlocked
+    return isUnlocked && isEnabled;
+}
+
+/**
+ * Toggle rainbow loading bar on/off
+ */
+function toggleRainbowLoading() {
+    const current = localStorage.getItem('rainbowLoadingEnabled') !== 'false';
+    localStorage.setItem('rainbowLoadingEnabled', (!current).toString());
+    updateRainbowLoadingClass();
+}
+
+/**
+ * Update rainbow-loading class on loading bar based on achievement status
+ */
+function updateRainbowLoadingClass() {
+    const loadingProgress = document.querySelector('.loading-progress');
+    if (loadingProgress) {
+        if (isRainbowLoadingEnabled()) {
+            loadingProgress.classList.add('rainbow-loading');
+        } else {
+            loadingProgress.classList.remove('rainbow-loading');
+        }
+    }
+}
+
+// ========================================
 // AUTO-INITIALIZATION
 // ========================================
+
+// Track page load time for achievement banner delay
+window.achievementPageLoadTime = Date.now();
 
 // Automatically check achievements on page load and update nav link
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        achievementManager.checkAchievements();
+        // Check for new achievements
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            achievementManager.showAchievementBanner(achievement);
+        });
+
+        // Check for existing pending achievements and show banner
+        if (newlyPending.length === 0 && achievementManager.pendingAchievements.length > 0) {
+            const pendingId = achievementManager.pendingAchievements[0];
+            const achievement = Object.values(ACHIEVEMENTS).find(a => a.id === pendingId);
+            if (achievement) {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        }
+
         updateAchievementNavLink();
         updateRainbowTextClass();
+        updateRainbowLoadingClass();
     });
 } else {
-    achievementManager.checkAchievements();
+    // Check for new achievements
+    const newlyPending = achievementManager.checkAchievements();
+    newlyPending.forEach(achievement => {
+        achievementManager.showAchievementBanner(achievement);
+    });
+
+    // Check for existing pending achievements and show banner
+    if (newlyPending.length === 0 && achievementManager.pendingAchievements.length > 0) {
+        const pendingId = achievementManager.pendingAchievements[0];
+        const achievement = Object.values(ACHIEVEMENTS).find(a => a.id === pendingId);
+        if (achievement) {
+            achievementManager.showAchievementBanner(achievement);
+        }
+    }
+
     updateAchievementNavLink();
     updateRainbowTextClass();
+    updateRainbowLoadingClass();
 }
 
 // Export for use in other scripts
@@ -411,6 +587,8 @@ if (typeof module !== 'undefined' && module.exports) {
         achievementManager,
         trackLoadingTip,
         trackThemeToggle,
+        trackDevConsoleOpen,
+        track404Visit,
         getLoadingTipProgress,
         initCelebrationPage,
         resetAchievementProgress,
@@ -418,6 +596,9 @@ if (typeof module !== 'undefined' && module.exports) {
         toggleRainbowText,
         isRainbowTextEnabled,
         updateRainbowTextClass,
+        toggleRainbowLoading,
+        isRainbowLoadingEnabled,
+        updateRainbowLoadingClass,
         ACHIEVEMENTS
     };
 }
