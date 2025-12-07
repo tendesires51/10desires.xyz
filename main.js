@@ -96,3 +96,47 @@ function toggleStats(card) {
     // Toggle the clicked card
     card.classList.toggle('active');
 }
+
+// Create floating particles for hero section
+function createHeroParticles() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    const particleCount = 20;
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'hero-particle';
+
+        // Random position
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+
+        // Random size
+        const size = Math.random() * 4 + 2;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+
+        // Random animation duration
+        const duration = Math.random() * 20 + 10;
+        particle.style.animationDuration = duration + 's';
+
+        // Random animation delay
+        particle.style.animationDelay = Math.random() * 5 + 's';
+
+        hero.appendChild(particle);
+    }
+}
+
+// Initialize particles when DOM is loaded
+if (document.querySelector('.hero')) {
+    createHeroParticles();
+
+    // Add rainbow text shadow animation to title after it loads
+    setTimeout(() => {
+        const heroTitle = document.querySelector('.hero-title');
+        if (heroTitle) {
+            heroTitle.classList.add('rainbow-text');
+        }
+    }, 1400);
+}
