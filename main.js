@@ -140,3 +140,68 @@ if (document.querySelector('.hero')) {
         }
     }, 1400);
 }
+
+// Cookie utility functions
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i];
+        while (cookie.charAt(0) === ' ') {
+            cookie = cookie.substring(1, cookie.length);
+        }
+        if (cookie.indexOf(nameEQ) === 0) {
+            return cookie.substring(nameEQ.length, cookie.length);
+        }
+    }
+    return null;
+}
+
+// Cookie consent banner functionality
+function initCookieBanner() {
+    const banner = document.querySelector('.cookie-banner');
+    if (!banner) return;
+
+    // Check if user has already made a choice
+    const cookieConsent = getCookie('cookieConsent');
+
+    if (!cookieConsent) {
+        // Show banner after a short delay
+        setTimeout(() => {
+            banner.classList.add('show');
+        }, 1000);
+    }
+
+    // Accept button
+    const acceptBtn = banner.querySelector('.cookie-btn-accept');
+    if (acceptBtn) {
+        acceptBtn.addEventListener('click', () => {
+            // Set cookie for 30 days
+            setCookie('cookieConsent', 'accepted', 30);
+            banner.classList.remove('show');
+            // You can add analytics tracking code here
+            console.log('Cookies accepted');
+        });
+    }
+
+    // Decline button
+    const declineBtn = banner.querySelector('.cookie-btn-decline');
+    if (declineBtn) {
+        declineBtn.addEventListener('click', () => {
+            // Set cookie for 30 days
+            setCookie('cookieConsent', 'declined', 30);
+            banner.classList.remove('show');
+            console.log('Cookies declined');
+        });
+    }
+}
+
+// Initialize cookie banner when DOM is loaded
+initCookieBanner();

@@ -264,6 +264,45 @@ background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 10
 </div>
 ```
 
+## Cookie Consent Banner
+
+Add a GDPR-compliant cookie banner to any page:
+
+```html
+<!-- Add before closing </body> tag -->
+<div class="cookie-banner">
+    <div class="cookie-banner-content">
+        <div class="cookie-banner-text">
+            <p>
+                This site uses cookies to enhance your experience.
+                By continuing to browse, you agree to our use of cookies.
+                <a href="/privacy">Learn more</a>
+            </p>
+        </div>
+        <div class="cookie-banner-actions">
+            <button class="cookie-btn cookie-btn-accept">Accept</button>
+            <button class="cookie-btn cookie-btn-decline">Decline</button>
+        </div>
+    </div>
+</div>
+```
+
+**Features:**
+- Slides up from bottom with bouncy animation
+- Saves user preference as a real cookie (30-day expiration)
+- Auto-hides if user already made a choice
+- Fully responsive (stacks on mobile)
+- Matches site theme (light/dark mode support)
+- Glassmorphism backdrop effect
+
+**How it works:**
+- Banner appears 1 second after page load
+- User's choice is saved as a cookie named `cookieConsent`
+- Cookie expires after 30 days (user will be asked to reconfirm)
+- Won't show again until cookie expires
+- JavaScript in `main.js` handles all functionality
+- Includes `setCookie()` and `getCookie()` utility functions
+
 ## Quick Tips
 
 1. **Always use CSS variables** instead of hardcoded colors/spacing
@@ -274,6 +313,7 @@ background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 10
 6. **Hero sections** should use `.hero-short` for subpages
 7. **Buttons** use `.btn-primary` or `.btn-secondary` classes
 8. **Responsive** breakpoint is 768px (automatically handled)
+9. **Cookie banner** just copy/paste the HTML - JavaScript is already in main.js
 
 ## Example: Creating a New "Photography" Page
 
