@@ -8,6 +8,67 @@ window.addEventListener('load', () => {
     }
 });
 
+// Display random loading tip and track seen tips (loadingTips is loaded from tips.js)
+const loadingTipElement = document.querySelector('.loading-tip');
+if (loadingTipElement && typeof loadingTips !== 'undefined') {
+    const randomTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
+    loadingTipElement.textContent = randomTip;
+
+    // Track seen tips
+    let seenTips = JSON.parse(localStorage.getItem('seenTips') || '[]');
+    if (!seenTips.includes(randomTip)) {
+        seenTips.push(randomTip);
+        localStorage.setItem('seenTips', JSON.stringify(seenTips));
+
+        // Check if user has seen all tips
+        if (seenTips.length === loadingTips.length) {
+            localStorage.setItem('achievementUnlocked', 'true');
+
+            // Show achievement banner after loading screen
+            setTimeout(() => {
+                showAchievementBanner();
+            }, 2000);
+        }
+    }
+}
+
+// Achievement banner function
+function showAchievementBanner() {
+    const banner = document.createElement('div');
+    banner.className = 'achievement-banner';
+    banner.innerHTML = `
+        <div class="achievement-content">
+            <div class="achievement-icon">🏆</div>
+            <div class="achievement-text">
+                <h3>Achievement Unlocked!</h3>
+                <p>you've seen all 50 loading tips. welcome to the secret club.</p>
+                <a href="/celebration" class="achievement-link">claim your prize →</a>
+            </div>
+            <button class="achievement-close" onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+    `;
+    document.body.appendChild(banner);
+
+    // Animate in
+    setTimeout(() => banner.classList.add('show'), 100);
+
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+        banner.classList.remove('show');
+        setTimeout(() => banner.remove(), 500);
+    }, 10000);
+}
+
+// Update secret link text if achievement is unlocked
+const secretLink = document.querySelector('#secret-link');
+const secretLinkMobile = document.querySelector('#secret-link-mobile');
+const achievementUnlocked = localStorage.getItem('achievementUnlocked') === 'true';
+
+if (achievementUnlocked) {
+    if (secretLink) secretLink.textContent = 'Celebration';
+    if (secretLinkMobile) secretLinkMobile.textContent = 'Celebration';
+}
+
 // Theme toggle functionality
 const themeToggle = document.querySelector('.theme-toggle');
 const html = document.documentElement;
