@@ -91,7 +91,29 @@ var(--radius-pill)  /* 980px (pill-shaped) */
 
 <!-- Red accent hero (coasters page) -->
 <section class="hero hero-short hero-accent-red">
+
+<!-- Celebration hero (70vh height, centered content) -->
+<section class="hero hero-short celebration-hero">
 ```
+
+### Special Effects
+
+#### Rainbow Text Shadow (Hover Effect)
+```html
+<!-- Add .rainbow-text class to any .hero-title for rainbow hover effect -->
+<h1 class="hero-title rainbow-text">Hover over me!</h1>
+
+<!-- Works on celebration pages too -->
+<h1 class="hero-title hero-title-smaller celebration-title rainbow-text">
+    Stop right there!
+</h1>
+```
+
+**Features:**
+- Animated rainbow text shadow on hover
+- Pop-in scale animation
+- Smooth fade-out when hover ends
+- Cursor changes to pointer
 
 ### Buttons
 ```html
@@ -156,6 +178,51 @@ var(--radius-pill)  /* 980px (pill-shaped) */
         </div>
     </div>
 </div>
+```
+
+#### Celebration Page Components
+```html
+<!-- Celebration Hero Section -->
+<section class="hero hero-short celebration-hero">
+    <!-- Locked State -->
+    <div id="celebration-locked" class="celebration-state">
+        <p class="hero-eyebrow">Nice try...</p>
+        <h1 class="hero-title hero-title-smaller celebration-title rainbow-text">Stop right there!</h1>
+        <p class="hero-subtitle hero-subtitle-smaller">Come back when you've earned it.</p>
+        <div class="hero-cta">
+            <a href="/" class="btn-primary">Go Back and Earn It</a>
+        </div>
+        <div class="progress-section">
+            <p class="progress-text" id="progress-text"></p>
+        </div>
+    </div>
+
+    <!-- Unlocked State -->
+    <div id="celebration-unlocked" class="celebration-state">
+        <p class="hero-eyebrow">Congratulations!</p>
+        <h1 class="hero-title hero-title-smaller celebration-title rainbow-text">
+            🎉 You Did It 🎉
+        </h1>
+        <p class="hero-subtitle hero-subtitle-smaller">Achievement unlocked!</p>
+    </div>
+</section>
+
+<!-- Celebration Content Section -->
+<section class="celebration-content">
+    <div class="section-container celebration-reward-section">
+        <p class="section-eyebrow celebration-eyebrow">Your Reward</p>
+        <h2 class="section-title celebration-section-title">Amazing Title</h2>
+        <p class="section-subtitle celebration-section-subtitle">Subtitle here</p>
+
+        <div class="celebration-body">
+            <p class="celebration-paragraph">Body text goes here.</p>
+            <p class="celebration-paragraph celebration-stat">Highlighted stat or achievement</p>
+            <div class="celebration-reset-section">
+                <button class="btn-primary" onclick="resetProgress()">Reset Progress</button>
+            </div>
+        </div>
+    </div>
+</section>
 ```
 
 ### Grid Layouts
@@ -303,6 +370,30 @@ Add a GDPR-compliant cookie banner to any page:
 - JavaScript in `main.js` handles all functionality
 - Includes `setCookie()` and `getCookie()` utility functions
 
+## Celebration Page Styling
+
+The celebration page has specialized classes for achievement/unlock pages:
+
+### Key Classes
+- `.celebration-hero` - 70vh hero section with centered content
+- `.celebration-state` - Container for locked/unlocked states (centered, max-width 800px)
+- `.celebration-title` - Title styling with proper spacing
+- `.progress-section` - Glassmorphic card for progress display
+- `.progress-text` - Styled progress text (16px, medium weight)
+- `.celebration-content` - Main content section wrapper
+- `.celebration-reward-section` - Centered reward section
+- `.celebration-body` - Max-width 680px body content container
+- `.celebration-paragraph` - Standard paragraph (19px, 1.6 line-height)
+- `.celebration-stat` - Highlighted stat card (accent color, card background)
+- `.celebration-reset-section` - Bottom section with border-top separator
+
+### Usage Notes
+- Subtitles auto-center with `margin-left/right: auto`
+- Progress section has backdrop blur and glassmorphic styling
+- Stats appear in accent-colored cards with borders
+- All elements are fully responsive (60vh hero on mobile)
+- Combines well with `.rainbow-text` for interactive titles
+
 ## Quick Tips
 
 1. **Always use CSS variables** instead of hardcoded colors/spacing
@@ -314,6 +405,7 @@ Add a GDPR-compliant cookie banner to any page:
 7. **Buttons** use `.btn-primary` or `.btn-secondary` classes
 8. **Responsive** breakpoint is 768px (automatically handled)
 9. **Cookie banner** just copy/paste the HTML - JavaScript is already in main.js
+10. **Rainbow effect** - Add `.rainbow-text` to hero titles for interactive hover effect
 
 ## Example: Creating a New "Photography" Page
 
