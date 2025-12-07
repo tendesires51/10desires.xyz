@@ -1,3 +1,13 @@
+// Loading screen functionality
+window.addEventListener('load', () => {
+    const loadingScreen = document.querySelector('.loading-screen');
+    if (loadingScreen) {
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+        }, 1600);
+    }
+});
+
 // Theme toggle functionality
 const themeToggle = document.querySelector('.theme-toggle');
 const html = document.documentElement;
