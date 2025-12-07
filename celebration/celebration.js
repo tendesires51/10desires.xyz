@@ -1,34 +1,155 @@
+/**
+ * Achievements Hub Page
+ * Displays all achievements in a grid layout
+ */
+
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if user has unlocked the achievement
-    const achievementUnlocked = localStorage.getItem('achievementUnlocked') === 'true';
-    const seenTips = JSON.parse(localStorage.getItem('seenTips') || '[]');
-    const totalTips = typeof loadingTips !== 'undefined' ? loadingTips.length : 50;
-
-    const lockedSection = document.querySelector('#celebration-locked');
-    const unlockedSection = document.querySelector('#celebration-unlocked');
-    const celebrationContent = document.querySelector('.celebration-content');
-    const progressText = document.querySelector('#progress-text');
-
-    if (achievementUnlocked) {
-        // Show unlocked content
-        if (unlockedSection) unlockedSection.style.display = 'block';
-        if (celebrationContent) celebrationContent.style.display = 'block';
-    } else {
-        // Show locked content with progress
-        if (lockedSection) lockedSection.style.display = 'block';
-        const progress = seenTips.length;
-        if (progressText) {
-            progressText.textContent = `You've seen ${progress} out of ${totalTips} tips. Keep refreshing!`;
-        }
-    }
+    initAchievementsPage();
 });
 
-// Reset progress function
-function resetProgress() {
-    if (confirm('Are you sure you want to reset your progress? This will delete all your seen tips and lock this page again.')) {
+/**
+ * Initialize the achievements page
+ */
+function initAchievementsPage() {
+    const grid = document.getElementById('achievements-grid');
+    if (!grid) return;
+
+    // Get all achievements
+    const achievements = Object.values(ACHIEVEMENTS);
+    const totalAchievements = achievements.length;
+    const unlockedAchievements = achievementManager.getUnlockedAchievements();
+    const totalUnlocked = unlockedAchievements.length;
+    const percentage = totalAchievements > 0 ? Math.round((totalUnlocked / totalAchievements) * 100) : 0;
+
+    // Update stats
+    document.getElementById('total-unlocked').textContent = totalUnlocked;
+    document.getElementById('total-achievements').textContent = totalAchievements;
+    document.getElementById('completion-percentage').textContent = `${percentage}%`;
+
+    // Clear grid
+    grid.innerHTML = '';
+
+    // Create achievement cards
+    achievements.forEach(achievement => {
+        const isUnlocked = achievementManager.isUnlocked(achievement.id);
+        const card = createAchievementCard(achievement, isUnlocked);
+        grid.appendChild(card);
+    });
+}
+
+/**
+ * Create an achievement card element
+ */
+function createAchievementCard(achievement, isUnlocked) {
+    const card = document.createElement('div');
+    card.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+    // Get progress for this achievement if applicable
+    let progressHTML = '';
+    if (!isUnlocked) {
+        if (achievement.id === 'loadingTipsMaster') {
+            const progress = getLoadingTipProgress();
+            progressHTML = `
+                <div class="achievement-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress.percentage}%"></div>
+                    </div>
+                    <p class="progress-label">${progress.seen}/${progress.total} tips seen</p>
+                </div>
+            `;
+        } else if (achievement.id === 'epilepsyWarning') {
+            const toggleData = JSON.parse(localStorage.getItem('themeToggles') || '{"count": 0, "timestamp": 0}');
+            const now = Date.now();
+            // Only show progress if within the 10 second window
+            const isActive = (now - toggleData.timestamp) <= 10000;
+            const count = isActive ? toggleData.count : 0;
+            const percentage = Math.min((count / 50) * 100, 100);
+            progressHTML = `
+                <div class="achievement-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${percentage}%"></div>
+                    </div>
+                    <p class="progress-label">${count}/50 toggles ${isActive ? '(active)' : ''}</p>
+                </div>
+            `;
+        }
+    }
+
+    // Add rainbow text toggle for Epilepsy Warning achievement
+    let toggleHTML = '';
+    if (isUnlocked && achievement.id === 'epilepsyWarning') {
+        const isEnabled = typeof isRainbowTextEnabled === 'function' ? isRainbowTextEnabled() : true;
+        toggleHTML = `
+            <div class="achievement-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="rainbow-toggle" ${isEnabled ? 'checked' : ''}>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Rainbow Text Effect</span>
+            </div>
+        `;
+    }
+
+    card.innerHTML = `
+        <div class="achievement-icon ${!isUnlocked ? 'locked-icon' : ''}">${isUnlocked ? achievement.icon : '🔒'}</div>
+        <div class="achievement-info">
+            <h3 class="achievement-name">${isUnlocked ? achievement.name : '???'}</h3>
+            <p class="achievement-desc">${isUnlocked ? achievement.description : 'Keep exploring to unlock this achievement!'}</p>
+            ${progressHTML}
+            ${toggleHTML}
+        </div>
+        ${isUnlocked ? '<span class="achievement-badge">✓</span>' : ''}
+    `;
+
+    // Add toggle event listener for rainbow text
+    if (isUnlocked && achievement.id === 'epilepsyWarning') {
+        // Need to wait for the card to be in DOM before adding listener
+        setTimeout(() => {
+            const toggle = card.querySelector('#rainbow-toggle');
+            if (toggle) {
+                // Ensure toggle reflects current state
+                toggle.checked = typeof isRainbowTextEnabled === 'function' ? isRainbowTextEnabled() : true;
+
+                toggle.addEventListener('change', (e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    if (typeof toggleRainbowText === 'function') {
+                        toggleRainbowText();
+                    }
+                });
+            }
+        }, 0);
+    }
+
+    // Make unlocked cards clickable if they have an unlock page
+    if (isUnlocked && achievement.unlockPage) {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            // Don't navigate if clicking on toggle
+            if (!e.target.closest('.achievement-toggle')) {
+                window.location.href = achievement.unlockPage;
+            }
+        });
+    }
+
+    return card;
+}
+
+/**
+ * Reset all achievements
+ */
+function resetAllAchievements() {
+    if (confirm('Are you sure you want to reset ALL achievements? This will delete all progress and cannot be undone.')) {
+        // Reset achievement manager
+        achievementManager.resetAll();
+
+        // Reset specific achievement data
         localStorage.removeItem('seenTips');
-        localStorage.removeItem('achievementUnlocked');
-        window.location.href = '/';
+        localStorage.removeItem('themeToggles');
+        localStorage.removeItem('rainbowTextEnabled');
+        localStorage.removeItem('achievementUnlocked'); // Legacy support
+
+        // Reload page to show updated state
+        window.location.reload();
     }
 }

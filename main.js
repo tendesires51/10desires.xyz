@@ -10,64 +10,20 @@ window.addEventListener('load', () => {
 
 // Display random loading tip and track seen tips (loadingTips is loaded from tips.js)
 const loadingTipElement = document.querySelector('.loading-tip');
+let currentTipIndex = null;
+
 if (loadingTipElement && typeof loadingTips !== 'undefined') {
-    const randomTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
+    currentTipIndex = Math.floor(Math.random() * loadingTips.length);
+    const randomTip = loadingTips[currentTipIndex];
     loadingTipElement.textContent = randomTip;
+}
 
-    // Track seen tips
-    let seenTips = JSON.parse(localStorage.getItem('seenTips') || '[]');
-    if (!seenTips.includes(randomTip)) {
-        seenTips.push(randomTip);
-        localStorage.setItem('seenTips', JSON.stringify(seenTips));
-
-        // Check if user has seen all tips
-        if (seenTips.length === loadingTips.length) {
-            localStorage.setItem('achievementUnlocked', 'true');
-
-            // Show achievement banner after loading screen
-            setTimeout(() => {
-                showAchievementBanner();
-            }, 2000);
-        }
+// Track the tip after DOM loads to ensure achieves.js is available
+document.addEventListener('DOMContentLoaded', () => {
+    if (currentTipIndex !== null && typeof trackLoadingTip === 'function') {
+        trackLoadingTip(currentTipIndex);
     }
-}
-
-// Achievement banner function
-function showAchievementBanner() {
-    const banner = document.createElement('div');
-    banner.className = 'achievement-banner';
-    banner.innerHTML = `
-        <div class="achievement-content">
-            <div class="achievement-icon">🏆</div>
-            <div class="achievement-text">
-                <h3>Achievement Unlocked!</h3>
-                <p>you've seen all 50 loading tips. welcome to the secret club.</p>
-                <a href="/celebration" class="achievement-link">claim your prize →</a>
-            </div>
-            <button class="achievement-close" onclick="this.parentElement.parentElement.remove()">×</button>
-        </div>
-    `;
-    document.body.appendChild(banner);
-
-    // Animate in
-    setTimeout(() => banner.classList.add('show'), 100);
-
-    // Auto-remove after 10 seconds
-    setTimeout(() => {
-        banner.classList.remove('show');
-        setTimeout(() => banner.remove(), 500);
-    }, 10000);
-}
-
-// Update secret link text if achievement is unlocked
-const secretLink = document.querySelector('#secret-link');
-const secretLinkMobile = document.querySelector('#secret-link-mobile');
-const achievementUnlocked = localStorage.getItem('achievementUnlocked') === 'true';
-
-if (achievementUnlocked) {
-    if (secretLink) secretLink.textContent = 'Celebration';
-    if (secretLinkMobile) secretLinkMobile.textContent = 'Celebration';
-}
+});
 
 // Theme toggle functionality
 const themeToggle = document.querySelector('.theme-toggle');
@@ -128,6 +84,11 @@ themeToggle.addEventListener('click', () => {
     html.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     setTimeout(updateNavBackground, 10);
+
+    // Track theme toggle for achievement
+    if (typeof trackThemeToggle === 'function') {
+        trackThemeToggle();
+    }
 });
 
 // Scroll animations with IntersectionObserver
@@ -203,13 +164,8 @@ function createHeroParticles() {
 if (document.querySelector('.hero')) {
     createHeroParticles();
 
-    // Add rainbow text shadow animation to title after it loads
-    setTimeout(() => {
-        const heroTitle = document.querySelector('.hero-title');
-        if (heroTitle) {
-            heroTitle.classList.add('rainbow-text');
-        }
-    }, 1400);
+    // Rainbow text is now controlled by the achievement system in achieves.js
+    // It will be added automatically if the Epilepsy Warning achievement is unlocked
 }
 
 // Cookie utility functions
