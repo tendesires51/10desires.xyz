@@ -2,3 +2,6 @@
 .vscode/
 .DS_Store
 .LSOverride
+.htaccess
+netlify.toml
+vercel.json
