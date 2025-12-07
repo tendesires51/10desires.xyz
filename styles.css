@@ -973,7 +973,7 @@ footer {
 }
 
 .coaster-card.active .coaster-stats {
-    max-height: 200px;
+    max-height: 300px;
     opacity: 1;
     margin-top: 16px;
 }
@@ -1257,6 +1257,10 @@ footer {
     }
 
     .coaster-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .coaster-card.active .coaster-stats {
+        max-height: 200px;
     }
 }
