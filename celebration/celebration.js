@@ -19,14 +19,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (lockedSection) lockedSection.style.display = 'block';
         const progress = seenTips.length;
         if (progressText) {
-            progressText.textContent = `you've seen ${progress} out of ${totalTips} tips. keep refreshing!`;
+            progressText.textContent = `You've seen ${progress} out of ${totalTips} tips. Keep refreshing!`;
         }
     }
 });
 
 // Reset progress function
 function resetProgress() {
-    if (confirm('are you sure you want to reset your progress? this will delete all your seen tips and lock this page again.')) {
+    if (confirm('Are you sure you want to reset your progress? This will delete all your seen tips and lock this page again.')) {
         localStorage.removeItem('seenTips');
         localStorage.removeItem('achievementUnlocked');
         window.location.href = '/';
