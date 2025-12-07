@@ -54,37 +54,38 @@
         </ul>
     </div>
 
-    <section class="hero hero-short" id="celebration-hero">
-        <div id="celebration-locked" style="display: none;">
-            <p class="hero-eyebrow">nice try...</p>
-            <h1 class="hero-title hero-title-smaller">you haven't earned this yet</h1>
-            <p class="hero-subtitle hero-subtitle-smaller">come back when you've seen all 50 loading tips. no cheating. we're watching.</p>
+    <section class="hero hero-short celebration-hero" id="celebration-hero">
+        <div id="celebration-locked" class="celebration-state" style="display: none;">
+            <p class="hero-eyebrow">Nice try...</p>
+            <h1 class="hero-title hero-title-smaller celebration-title rainbow-text">Stop right there!</h1>
+            <p class="hero-subtitle hero-subtitle-smaller">Come back when you've seen all 50 loading tips. No cheating. We're watching.</p>
             <div class="hero-cta">
-                <a href="/" class="btn-primary">go back and earn it</a>
+                <a href="/" class="btn-primary">Go Back and Earn It</a>
             </div>
-            <div style="margin-top: 40px;">
-                <p style="font-size: 14px; color: var(--text-secondary);" id="progress-text"></p>
+            <div class="progress-section">
+                <p class="progress-text" id="progress-text"></p>
             </div>
         </div>
 
-        <div id="celebration-unlocked" style="display: none;">
-            <p class="hero-eyebrow">congratulations!</p>
-            <h1 class="hero-title hero-title-smaller"><Æ you did it <Æ</h1>
-            <p class="hero-subtitle hero-subtitle-smaller">you've officially seen all 50 loading tips. welcome to the secret club of dedicated refreshers.</p>
+        <div id="celebration-unlocked" class="celebration-state" style="display: none;">
+            <p class="hero-eyebrow">Congratulations!</p>
+            <h1 class="hero-title hero-title-smaller celebration-title rainbow-text">
+                <span class="diamond-icon">ðŸŽ‰</span> You Did It <span class="diamond-icon">ðŸŽ‰</span>
+            </h1>
+            <p class="hero-subtitle hero-subtitle-smaller">You've officially seen all 50 loading tips. Welcome to the secret club of dedicated refreshers.</p>
         </div>
     </section>
 
     <section id="about" style="display: none;" class="celebration-content">
-        <div class="section-container">
-            <p class="section-eyebrow">Your Reward</p>
-            <h2 class="section-title">not much, honestly.</h2>
-            <p class="section-subtitle">but you get bragging rights, i guess?</p>
+        <div class="section-container celebration-reward-section">
+            <p class="section-eyebrow celebration-eyebrow">Your Reward</p>
+            <h2 class="section-title celebration-section-title">Not Much, Honestly.</h2>
+            <p class="section-subtitle celebration-section-subtitle">But you get bragging rights, I guess?</p>
 
-            <div class="about-content">
-                <p>seriously though, thanks for sticking around long enough to see all the tips. you either really like this site, have way too much free time, or you're just really dedicated to completing pointless achievements. either way, respect.</p>
-                <p style="margin-top: 20px;">here's a fun stat: you've refreshed this site at least 50 times. that's commitment.</p>
-                <div style="margin-top: 40px;">
-                    <button class="btn-primary" onclick="resetProgress()">reset progress (if you're into that)</button>
+            <div class="celebration-body">
+                <p class="celebration-paragraph">Seriously though, thanks for sticking around long enough to see all the tips. You either really like this site, have way too much free time, or you're just really dedicated to completing pointless achievements. Either way, respect.</p>
+                <div class="celebration-reset-section">
+                    <button class="btn-primary" onclick="resetProgress()">Reset Progress (If You're Into That)</button>
                 </div>
             </div>
         </div>
