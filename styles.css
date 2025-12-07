@@ -289,6 +289,12 @@ nav {
     padding: 120px var(--spacing-md) 60px;
 }
 
+/* Full-page hero variant (for 404 and similar standalone pages) */
+.hero-full-page {
+    min-height: calc(100vh - 80px); /* Subtract footer height */
+    padding: 120px var(--spacing-md) 80px;
+}
+
 /* Hero Background Effects */
 .hero::before {
     content: '';
