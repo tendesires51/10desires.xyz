@@ -131,6 +131,17 @@ function createAchievementCard(achievement, isUnlocked) {
                 <span class="toggle-label">Blur Filter Effect</span>
             </div>
         `;
+    } else if (isUnlocked && achievement.id === 'educated') {
+        const isEnabled = typeof isEditModeEnabled === 'function' ? isEditModeEnabled() : true;
+        toggleHTML = `
+            <div class="achievement-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="edit-mode-toggle" ${isEnabled ? 'checked' : ''}>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Edit Mode</span>
+            </div>
+        `;
     }
 
     card.innerHTML = `
@@ -187,6 +198,21 @@ function createAchievementCard(achievement, isUnlocked) {
                     e.stopPropagation(); // Prevent card click event
                     if (typeof toggleBlurFilter === 'function') {
                         toggleBlurFilter();
+                    }
+                });
+            }
+        }, 0);
+    } else if (isUnlocked && achievement.id === 'educated') {
+        setTimeout(() => {
+            const toggle = card.querySelector('#edit-mode-toggle');
+            if (toggle) {
+                // Ensure toggle reflects current state
+                toggle.checked = typeof isEditModeEnabled === 'function' ? isEditModeEnabled() : true;
+
+                toggle.addEventListener('change', (e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    if (typeof toggleEditMode === 'function') {
+                        toggleEditMode();
                     }
                 });
             }

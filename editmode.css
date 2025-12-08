@@ -1,0 +1,143 @@
+/* ========================================
+   Edit Mode Achievement Reward
+   Drag-and-drop coaster reordering
+   ======================================== */
+
+/* Remove tied styling in edit mode */
+body.edit-mode .coaster-card.tied {
+    border-left: 1px solid var(--border) !important;
+}
+
+/* Edit Mode visual indicator */
+body.edit-mode .coaster-section::before {
+    content: "✏️ Edit Mode Active - Drag to reorder";
+    display: block;
+    text-align: center;
+    padding: var(--spacing-sm);
+    margin: 0 auto var(--spacing-md);
+    max-width: 400px;
+    background: var(--accent);
+    color: white;
+    font-weight: 100;
+    font-size: 14px;
+    border-radius: var(--radius-pill);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(191, 90, 242, 0.5);
+    }
+    50% {
+        opacity: 0.9;
+        box-shadow: 0 0 20px rgba(191, 90, 242, 0.8);
+    }
+}
+
+/* Make coaster cards more visually "draggable" in edit mode */
+body.edit-mode .coaster-card {
+    cursor: move !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.edit-mode .coaster-card:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Visual feedback during drag */
+body.edit-mode .coaster-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+/* Drag over indicator */
+body.edit-mode .coaster-card.drag-over {
+    border-color: var(--accent);
+    border-width: 2px;
+    background: rgba(191, 90, 242, 0.1);
+}
+
+/* Disable click-to-expand when in edit mode */
+body.edit-mode .coaster-card.active .coaster-stats {
+    display: none;
+}
+
+/* Add a subtle border to indicate draggability */
+body.edit-mode .coaster-card::after {
+    content: "⋮⋮";
+    position: absolute;
+    left: var(--spacing-sm);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--text-tertiary);
+    opacity: 0.5;
+}
+
+/* Share Ranking Button */
+.share-ranking-container {
+    text-align: center;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border);
+}
+
+body.edit-mode .share-ranking-container {
+    display: block !important;
+}
+
+.share-ranking-button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 100;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(191, 90, 242, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.share-ranking-button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(191, 90, 242, 0.35);
+}
+
+.share-ranking-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 16px rgba(191, 90, 242, 0.25);
+}
+
+.share-ranking-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body.edit-mode .coaster-section::before {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    body.edit-mode .coaster-card::after {
+        font-size: 16px;
+    }
+
+    .share-ranking-button {
+        font-size: 14px;
+        padding: 10px 24px;
+    }
+
+    body.edit-mode .coaster-section::before {
+        max-width: 300px;
+        font-size: 12px;
+    }
+}

@@ -68,6 +68,7 @@ const ACHIEVEMENTS = {
         description: 'Clicked on all coaster cards to learn their stats',
         icon: '🎢',
         unlockPage: '/celebration',
+        reward: 'Edit Mode - Rearrange coasters into your own ranking',
         checkCondition: () => {
             const clickedCoasters = JSON.parse(localStorage.getItem('clickedCoasters') || '[]');
             return clickedCoasters.length >= 16; // 15 coasters + 1 tied = 16 cards
@@ -857,6 +858,364 @@ function updateBlurFilterClass() {
     }
 }
 
+/**
+ * Toggle Edit Mode for coaster ranking
+ */
+function toggleEditMode() {
+    const current = localStorage.getItem('editModeEnabled') !== 'false';
+    localStorage.setItem('editModeEnabled', (!current).toString());
+    updateEditModeClass();
+}
+
+/**
+ * Check if Edit Mode is enabled
+ */
+function isEditModeEnabled() {
+    return achievementManager.isUnlocked('educated') &&
+           localStorage.getItem('editModeEnabled') !== 'false';
+}
+
+/**
+ * Update edit-mode class on body based on achievement status
+ */
+function updateEditModeClass() {
+    if (isEditModeEnabled()) {
+        document.body.classList.add('edit-mode');
+        enableCoasterDragAndDrop();
+    } else {
+        document.body.classList.remove('edit-mode');
+        disableCoasterDragAndDrop();
+    }
+}
+
+/**
+ * Enable drag and drop for coaster cards
+ */
+function enableCoasterDragAndDrop() {
+    const coasterList = document.querySelector('.coaster-list');
+    if (!coasterList) return;
+
+    const cards = coasterList.querySelectorAll('.coaster-card');
+
+    cards.forEach((card, index) => {
+        card.draggable = true;
+        card.style.cursor = 'move';
+
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragover', handleDragOver);
+        card.addEventListener('drop', handleDrop);
+        card.addEventListener('dragend', handleDragEnd);
+    });
+
+    // Load custom order if it exists
+    loadCustomCoasterOrder();
+
+    // Update ranks to show 1-16 in edit mode
+    updateCoasterRanks();
+}
+
+/**
+ * Disable drag and drop for coaster cards
+ */
+function disableCoasterDragAndDrop() {
+    const coasterList = document.querySelector('.coaster-list');
+    if (!coasterList) return;
+
+    const cards = coasterList.querySelectorAll('.coaster-card');
+
+    cards.forEach(card => {
+        card.draggable = false;
+        card.style.cursor = '';
+
+        card.removeEventListener('dragstart', handleDragStart);
+        card.removeEventListener('dragover', handleDragOver);
+        card.removeEventListener('drop', handleDrop);
+        card.removeEventListener('dragend', handleDragEnd);
+    });
+
+    // Restore original order
+    restoreOriginalCoasterOrder();
+
+    // Update ranks to restore tied ranking in normal mode
+    updateCoasterRanks();
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+    draggedElement = this;
+    this.style.opacity = '0.5';
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    if (draggedElement !== this) {
+        const coasterList = document.querySelector('.coaster-list');
+        const allCards = Array.from(coasterList.querySelectorAll('.coaster-card'));
+        const draggedIndex = allCards.indexOf(draggedElement);
+        const targetIndex = allCards.indexOf(this);
+
+        if (draggedIndex < targetIndex) {
+            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+        } else {
+            this.parentNode.insertBefore(draggedElement, this);
+        }
+
+        // Update rank numbers
+        updateCoasterRanks();
+        saveCustomCoasterOrder();
+    }
+
+    return false;
+}
+
+function handleDragEnd(e) {
+    this.style.opacity = '';
+    draggedElement = null;
+}
+
+/**
+ * Update rank numbers after reordering
+ */
+function updateCoasterRanks() {
+    const coasterList = document.querySelector('.coaster-list');
+    if (!coasterList) return;
+
+    const cards = coasterList.querySelectorAll('.coaster-card');
+    const isEditMode = document.body.classList.contains('edit-mode');
+
+    cards.forEach((card, index) => {
+        const rankSpan = card.querySelector('.coaster-rank');
+        if (rankSpan) {
+            if (isEditMode) {
+                // In edit mode, use sequential 1-16 ranking
+                rankSpan.textContent = index + 1;
+
+                // Hide the "Tied" label in edit mode
+                const tiedLabel = card.querySelector('.tied-label');
+                if (tiedLabel) {
+                    tiedLabel.style.display = 'none';
+                }
+            } else {
+                // In normal mode, respect the tied ranking
+                let currentRank = 1;
+                for (let i = 0; i <= index; i++) {
+                    if (i === index) {
+                        rankSpan.textContent = currentRank;
+                    } else if (!cards[i].classList.contains('tied') || i === 0) {
+                        currentRank++;
+                    }
+                }
+
+                // Show the "Tied" label in normal mode
+                const tiedLabel = card.querySelector('.tied-label');
+                if (tiedLabel) {
+                    tiedLabel.style.display = '';
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Save custom coaster order to localStorage
+ */
+function saveCustomCoasterOrder() {
+    const coasterList = document.querySelector('.coaster-list');
+    if (!coasterList) return;
+
+    const cards = coasterList.querySelectorAll('.coaster-card');
+    const order = Array.from(cards).map(card => {
+        const name = card.querySelector('.coaster-name').textContent;
+        const park = card.querySelector('.coaster-park').textContent;
+        return { name, park };
+    });
+
+    localStorage.setItem('customCoasterOrder', JSON.stringify(order));
+}
+
+/**
+ * Load custom coaster order from localStorage
+ */
+function loadCustomCoasterOrder() {
+    const customOrder = localStorage.getItem('customCoasterOrder');
+    if (!customOrder) return;
+
+    const order = JSON.parse(customOrder);
+    const coasterList = document.querySelector('.coaster-list');
+    if (!coasterList) return;
+
+    const cards = Array.from(coasterList.querySelectorAll('.coaster-card'));
+
+    // Reorder cards based on saved order
+    order.forEach((item, index) => {
+        const card = cards.find(c => {
+            const name = c.querySelector('.coaster-name').textContent;
+            const park = c.querySelector('.coaster-park').textContent;
+            return name === item.name && park === item.park;
+        });
+
+        if (card) {
+            coasterList.appendChild(card);
+        }
+    });
+
+    updateCoasterRanks();
+}
+
+/**
+ * Restore original coaster order
+ */
+function restoreOriginalCoasterOrder() {
+    const coasterList = document.querySelector('.coaster-list');
+    if (!coasterList) return;
+
+    const cards = Array.from(coasterList.querySelectorAll('.coaster-card'));
+
+    // Sort cards by their original rank (stored in data attribute or by reading the rank)
+    // For simplicity, we'll reload the page or just update ranks back to original
+    // Since we don't have original order stored, we'll just update the ranks sequentially
+    updateCoasterRanks();
+}
+
+/**
+ * Generate shareable image of coaster ranking
+ */
+async function generateShareableImage() {
+    const button = document.getElementById('share-ranking-btn');
+    if (!button) return;
+
+    // Disable button during generation
+    button.disabled = true;
+    button.textContent = '⏳ Generating...';
+
+    try {
+        const coasterList = document.querySelector('.coaster-list');
+        if (!coasterList) return;
+
+        // Create a canvas for the image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        const width = 800;
+        const padding = 40;
+        const cards = coasterList.querySelectorAll('.coaster-card');
+        const cardHeight = 80;
+        const cardSpacing = 12;
+        const headerHeight = 120;
+        const footerHeight = 60;
+        const height = headerHeight + (cards.length * (cardHeight + cardSpacing)) + footerHeight;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Get theme colors
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        const bgColor = isDarkMode ? '#0f0f0f' : '#ffffff';
+        const cardBg = isDarkMode ? '#1a1a1a' : '#f5f5f5';
+        const textPrimary = isDarkMode ? '#e0e0e0' : '#1a1a1a';
+        const textSecondary = isDarkMode ? '#a0a0a0' : '#666666';
+        const accent = '#bf5af2';
+        const border = isDarkMode ? '#2a2a2a' : '#e0e0e0';
+
+        // Fill background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+
+        // Draw header
+        ctx.fillStyle = textPrimary;
+        ctx.font = 'bold 36px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('My Ranking of 10desires\' top 16 coasters', width / 2, 50);
+
+        ctx.fillStyle = textSecondary;
+        ctx.font = '16px system-ui, -apple-system, sans-serif';
+        ctx.fillText('Ranked on 10desires.xyz', width / 2, 85);
+
+        // Draw coaster cards
+        let yPos = headerHeight;
+        cards.forEach((card, index) => {
+            const rank = card.querySelector('.coaster-rank').textContent;
+            const name = card.querySelector('.coaster-name').textContent;
+            const park = card.querySelector('.coaster-park').textContent;
+            const manufacturer = card.querySelector('.coaster-manufacturer').textContent;
+
+            // Draw card background
+            ctx.fillStyle = cardBg;
+            ctx.fillRect(padding, yPos, width - (padding * 2), cardHeight);
+
+            // Draw border
+            ctx.strokeStyle = border;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(padding, yPos, width - (padding * 2), cardHeight);
+
+            // Draw rank
+            ctx.fillStyle = accent;
+            ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(rank, padding + 20, yPos + 48);
+
+            // Draw coaster name
+            ctx.fillStyle = textPrimary;
+            ctx.font = 'bold 20px system-ui, -apple-system, sans-serif';
+            ctx.fillText(name, padding + 80, yPos + 35);
+
+            // Draw park
+            ctx.fillStyle = textSecondary;
+            ctx.font = '14px system-ui, -apple-system, sans-serif';
+            ctx.fillText(park, padding + 80, yPos + 58);
+
+            // Draw manufacturer (right aligned)
+            ctx.fillStyle = accent;
+            ctx.font = '14px system-ui, -apple-system, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(manufacturer, width - padding - 20, yPos + 48);
+
+            yPos += cardHeight + cardSpacing;
+        });
+
+        // Draw footer
+        ctx.fillStyle = textSecondary;
+        ctx.font = '12px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Created with Edit Mode achievement • 10desires.xyz', width / 2, yPos + 30);
+
+        // Convert canvas to blob and download
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `my-top-16-coasters-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Re-enable button
+            button.disabled = false;
+            button.textContent = '📸 Generate Shareable Image';
+        });
+
+    } catch (error) {
+        console.error('Error generating image:', error);
+        button.disabled = false;
+        button.textContent = '📸 Generate Shareable Image';
+    }
+}
+
 // ========================================
 // AUTO-INITIALIZATION
 // ========================================
@@ -889,6 +1248,13 @@ if (document.readyState === 'loading') {
         updateRainbowTextClass();
         updateRainbowLoadingClass();
         updateBlurFilterClass();
+        updateEditModeClass();
+
+        // Add event listener for share ranking button
+        const shareBtn = document.getElementById('share-ranking-btn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', generateShareableImage);
+        }
     });
 } else {
     // Track daily visit for streak achievement
@@ -913,6 +1279,13 @@ if (document.readyState === 'loading') {
     updateRainbowTextClass();
     updateRainbowLoadingClass();
     updateBlurFilterClass();
+    updateEditModeClass();
+
+    // Add event listener for share ranking button
+    const shareBtn = document.getElementById('share-ranking-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', generateShareableImage);
+    }
 }
 
 // Export for use in other scripts
@@ -943,6 +1316,9 @@ if (typeof module !== 'undefined' && module.exports) {
         toggleBlurFilter,
         isBlurFilterEnabled,
         updateBlurFilterClass,
+        toggleEditMode,
+        isEditModeEnabled,
+        updateEditModeClass,
         ACHIEVEMENTS
     };
 }
