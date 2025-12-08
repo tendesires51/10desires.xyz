@@ -459,6 +459,28 @@ function resetAchievementProgress(achievementId) {
     }
 }
 
+/**
+ * Reset all achievements
+ */
+function resetAllAchievements() {
+    if (confirm('Are you sure you want to reset ALL achievements? This will delete all progress and cannot be undone.')) {
+        // Reset achievement manager
+        achievementManager.resetAll();
+
+        // Reset specific achievement data
+        localStorage.removeItem('seenTips');
+        localStorage.removeItem('themeToggles');
+        localStorage.removeItem('rainbowTextEnabled');
+        localStorage.removeItem('rainbowLoadingEnabled');
+        localStorage.removeItem('devConsoleOpened');
+        localStorage.removeItem('visited404');
+        localStorage.removeItem('achievementUnlocked'); // Legacy support
+
+        // Reload page to show updated state
+        window.location.reload();
+    }
+}
+
 // ========================================
 // RAINBOW TEXT EFFECT (Epilepsy Warning Achievement)
 // ========================================
