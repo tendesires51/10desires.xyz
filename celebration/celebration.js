@@ -120,6 +120,17 @@ function createAchievementCard(achievement, isUnlocked) {
                 <span class="toggle-label">Rainbow Loading Bar</span>
             </div>
         `;
+    } else if (isUnlocked && achievement.id === 'badVision') {
+        const isEnabled = typeof isBlurFilterEnabled === 'function' ? isBlurFilterEnabled() : true;
+        toggleHTML = `
+            <div class="achievement-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="blur-filter-toggle" ${isEnabled ? 'checked' : ''}>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Blur Filter Effect</span>
+            </div>
+        `;
     }
 
     card.innerHTML = `
@@ -161,6 +172,21 @@ function createAchievementCard(achievement, isUnlocked) {
                     e.stopPropagation(); // Prevent card click event
                     if (typeof toggleRainbowLoading === 'function') {
                         toggleRainbowLoading();
+                    }
+                });
+            }
+        }, 0);
+    } else if (isUnlocked && achievement.id === 'badVision') {
+        setTimeout(() => {
+            const toggle = card.querySelector('#blur-filter-toggle');
+            if (toggle) {
+                // Ensure toggle reflects current state
+                toggle.checked = typeof isBlurFilterEnabled === 'function' ? isBlurFilterEnabled() : true;
+
+                toggle.addEventListener('change', (e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    if (typeof toggleBlurFilter === 'function') {
+                        toggleBlurFilter();
                     }
                 });
             }

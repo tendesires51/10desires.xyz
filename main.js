@@ -244,6 +244,42 @@ function initCookieBanner() {
 initCookieBanner();
 
 // ========================================
+// BARREL ROLL EASTER EGG
+// ========================================
+
+// Barrel Roll Console Command
+window.doabarrelroll = function() {
+    // Track achievement
+    if (typeof trackBarrelRoll === 'function') {
+        trackBarrelRoll();
+    }
+
+    // Apply barrel roll animation
+    document.body.classList.add('do-a-barrel-roll');
+
+    // Remove the class after animation completes to allow repeating
+    setTimeout(() => {
+        document.body.classList.remove('do-a-barrel-roll');
+    }, 4000);
+
+    console.log('🌀 Do a barrel roll!');
+};
+
+// Big Box Console Command
+window.igotabigboxyesido = function() {
+    // Track achievement
+    if (typeof trackBigBox === 'function') {
+        trackBigBox();
+    }
+
+    console.log('%c📦 I got a big box how \'bout you?', 'color: #bf5af2; font-size: 14px; font-weight: bold;');
+    return '📦 I got a big box how \'bout you?';
+};
+
+// Display hints in console
+console.log('%c💡 Tip: Try typing "doabarrelroll()" in the console!', 'color: #0071e3; font-size: 12px;');
+
+// ========================================
 // DEVELOPER CONSOLE DETECTOR
 // ========================================
 

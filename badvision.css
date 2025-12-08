@@ -1,0 +1,31 @@
+/* ========================================
+   Bad Vision Achievement Reward
+   Blur filter effect
+   ======================================== */
+
+/* Apply blur to main content areas, but not interactive elements */
+body.blur-filter .hero,
+body.blur-filter section:not([class*="celebration"]):not(.achievements-section),
+body.blur-filter footer,
+body.blur-filter .loading-screen {
+    filter: blur(2px) !important;
+    transition: none !important; /* Override global transition to prevent flickering */
+}
+
+/* Explicitly prevent blur on these elements */
+body.blur-filter nav,
+body.blur-filter .achievement-banner,
+body.blur-filter .celebration-hero,
+body.blur-filter .celebration-content,
+body.blur-filter .celebration-section,
+body.blur-filter .achievements-section,
+body.blur-filter .achievements-grid,
+body.blur-filter .achievement-card,
+body.blur-filter .achievement-toggle,
+body.blur-filter .achievement-card *,
+body.blur-filter input,
+body.blur-filter button {
+    filter: none !important;
+    transition: background 0.4s ease, background-color 0.4s ease,
+                border-color 0.4s ease, box-shadow 0.4s ease !important;
+}

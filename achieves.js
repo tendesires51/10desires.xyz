@@ -73,6 +73,36 @@ const ACHIEVEMENTS = {
             return clickedCoasters.length >= 16; // 15 coasters + 1 tied = 16 cards
         }
     },
+    BARREL_ROLL: {
+        id: 'barrelRoll',
+        name: 'Do a barrel roll!',
+        description: 'Executed doabarrelroll() in the console',
+        icon: '🌀',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('barrelRollExecuted') === 'true';
+        }
+    },
+    BIG_BOX: {
+        id: 'bigBox',
+        name: 'I think you don\'t know what you\'re saying.',
+        description: 'Executed igotabigboxyesido() in the console',
+        icon: '📦',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('bigBoxExecuted') === 'true';
+        }
+    },
+    BAD_VISION: {
+        id: 'badVision',
+        name: 'Bad Vision',
+        description: 'Zoomed in to 500% on your browser',
+        icon: '👓',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('badVisionUnlocked') === 'true';
+        }
+    },
     // Add more achievements here:
     // EXAMPLE_ACHIEVEMENT: {
     //     id: 'exampleAchievement',
@@ -522,6 +552,100 @@ function getCoasterClicksProgress() {
 }
 
 // ========================================
+// BARREL ROLL ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track barrel roll execution
+ * This should be called when the user executes doabarrelroll() in the console
+ */
+function trackBarrelRoll() {
+    if (localStorage.getItem('barrelRollExecuted') !== 'true') {
+        localStorage.setItem('barrelRollExecuted', 'true');
+
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            if (achievement.id === 'barrelRoll') {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        });
+    }
+}
+
+// ========================================
+// BIG BOX ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track big box execution
+ * This should be called when the user executes igotabigboxyesido() in the console
+ */
+function trackBigBox() {
+    if (localStorage.getItem('bigBoxExecuted') !== 'true') {
+        localStorage.setItem('bigBoxExecuted', 'true');
+
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            if (achievement.id === 'bigBox') {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        });
+    }
+}
+
+// ========================================
+// BAD VISION ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track zoom level for bad vision achievement
+ * Detects when user zooms to 500% or more
+ */
+function trackZoomLevel() {
+    if (localStorage.getItem('badVisionUnlocked') === 'true') {
+        return; // Already unlocked
+    }
+
+    // Detect zoom level using devicePixelRatio and window.outerWidth/innerWidth
+    const zoomLevel = Math.round((window.devicePixelRatio || 1) * 100);
+
+    // Also check visual viewport for more accurate zoom detection
+    const visualZoom = window.visualViewport ?
+        Math.round((window.innerWidth / window.visualViewport.width) * 100) : zoomLevel;
+
+    const currentZoom = Math.max(zoomLevel, visualZoom);
+
+    if (currentZoom >= 500) {
+        localStorage.setItem('badVisionUnlocked', 'true');
+
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            if (achievement.id === 'badVision') {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        });
+    }
+}
+
+// Track zoom level on page load and resize
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        trackZoomLevel();
+    });
+} else {
+    trackZoomLevel();
+}
+
+// Monitor zoom changes
+window.addEventListener('resize', trackZoomLevel);
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', trackZoomLevel);
+}
+
+// ========================================
 // CELEBRATION PAGE HANDLER
 // ========================================
 
@@ -587,6 +711,13 @@ function resetAchievementProgress(achievementId) {
             localStorage.removeItem('visitStreak');
         } else if (achievementId === 'educated') {
             localStorage.removeItem('clickedCoasters');
+        } else if (achievementId === 'barrelRoll') {
+            localStorage.removeItem('barrelRollExecuted');
+        } else if (achievementId === 'bigBox') {
+            localStorage.removeItem('bigBoxExecuted');
+        } else if (achievementId === 'badVision') {
+            localStorage.removeItem('badVisionUnlocked');
+            localStorage.removeItem('blurFilterEnabled');
         }
 
         // Redirect to home
@@ -611,6 +742,10 @@ function resetAllAchievements() {
         localStorage.removeItem('visited404');
         localStorage.removeItem('visitStreak');
         localStorage.removeItem('clickedCoasters');
+        localStorage.removeItem('barrelRollExecuted');
+        localStorage.removeItem('bigBoxExecuted');
+        localStorage.removeItem('badVisionUnlocked');
+        localStorage.removeItem('blurFilterEnabled');
         localStorage.removeItem('achievementUnlocked'); // Legacy support
 
         // Reload page to show updated state
@@ -691,6 +826,38 @@ function updateRainbowLoadingClass() {
 }
 
 // ========================================
+// BLUR FILTER EFFECT (Bad Vision Achievement)
+// ========================================
+
+/**
+ * Toggle blur filter effect
+ */
+function toggleBlurFilter() {
+    const current = localStorage.getItem('blurFilterEnabled') !== 'false';
+    localStorage.setItem('blurFilterEnabled', (!current).toString());
+    updateBlurFilterClass();
+}
+
+/**
+ * Check if blur filter is enabled
+ */
+function isBlurFilterEnabled() {
+    return achievementManager.isUnlocked('badVision') &&
+           localStorage.getItem('blurFilterEnabled') !== 'false';
+}
+
+/**
+ * Update blur-filter class on body based on achievement status
+ */
+function updateBlurFilterClass() {
+    if (isBlurFilterEnabled()) {
+        document.body.classList.add('blur-filter');
+    } else {
+        document.body.classList.remove('blur-filter');
+    }
+}
+
+// ========================================
 // AUTO-INITIALIZATION
 // ========================================
 
@@ -721,6 +888,7 @@ if (document.readyState === 'loading') {
         updateAchievementNavLink();
         updateRainbowTextClass();
         updateRainbowLoadingClass();
+        updateBlurFilterClass();
     });
 } else {
     // Track daily visit for streak achievement
@@ -744,6 +912,7 @@ if (document.readyState === 'loading') {
     updateAchievementNavLink();
     updateRainbowTextClass();
     updateRainbowLoadingClass();
+    updateBlurFilterClass();
 }
 
 // Export for use in other scripts
@@ -756,6 +925,8 @@ if (typeof module !== 'undefined' && module.exports) {
         track404Visit,
         trackDailyVisit,
         trackCoasterClick,
+        trackBarrelRoll,
+        trackBigBox,
         getLoadingTipProgress,
         getDailyVisitProgress,
         getCoasterClicksProgress,
@@ -769,6 +940,9 @@ if (typeof module !== 'undefined' && module.exports) {
         toggleRainbowLoading,
         isRainbowLoadingEnabled,
         updateRainbowLoadingClass,
+        toggleBlurFilter,
+        isBlurFilterEnabled,
+        updateBlurFilterClass,
         ACHIEVEMENTS
     };
 }
