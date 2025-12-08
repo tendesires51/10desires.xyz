@@ -127,6 +127,16 @@ function toggleStats(card) {
 
     // Toggle the clicked card
     card.classList.toggle('active');
+
+    // Track coaster click for achievement (only on first click/open)
+    if (card.classList.contains('active') && typeof trackCoasterClick === 'function') {
+        // Get the index of this card in the coaster list
+        const allCards = Array.from(document.querySelectorAll('.coaster-card'));
+        const cardIndex = allCards.indexOf(card);
+        if (cardIndex !== -1) {
+            trackCoasterClick(cardIndex);
+        }
+    }
 }
 
 // Create floating particles for hero section

@@ -73,6 +73,26 @@ function createAchievementCard(achievement, isUnlocked) {
                     <p class="progress-label">${count}/50 toggles ${isActive ? '(active)' : ''}</p>
                 </div>
             `;
+        } else if (achievement.id === 'dedicated') {
+            const progress = getDailyVisitProgress();
+            progressHTML = `
+                <div class="achievement-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress.percentage}%"></div>
+                    </div>
+                    <p class="progress-label">${progress.current}/${progress.total} days</p>
+                </div>
+            `;
+        } else if (achievement.id === 'educated') {
+            const progress = getCoasterClicksProgress();
+            progressHTML = `
+                <div class="achievement-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress.percentage}%"></div>
+                    </div>
+                    <p class="progress-label">${progress.clicked}/${progress.total} coasters clicked</p>
+                </div>
+            `;
         }
     }
 

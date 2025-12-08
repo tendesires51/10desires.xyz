@@ -51,6 +51,28 @@ const ACHIEVEMENTS = {
             return localStorage.getItem('visited404') === 'true';
         }
     },
+    DEDICATED: {
+        id: 'dedicated',
+        name: 'Dedicated',
+        description: 'Visited the website 7 days in a row',
+        icon: '📅',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            const streakData = JSON.parse(localStorage.getItem('visitStreak') || '{"streak": 0, "lastVisit": null}');
+            return streakData.streak >= 7;
+        }
+    },
+    EDUCATED: {
+        id: 'educated',
+        name: 'Educated',
+        description: 'Clicked on all coaster cards to learn their stats',
+        icon: '🎢',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            const clickedCoasters = JSON.parse(localStorage.getItem('clickedCoasters') || '[]');
+            return clickedCoasters.length >= 16; // 15 coasters + 1 tied = 16 cards
+        }
+    },
     // Add more achievements here:
     // EXAMPLE_ACHIEVEMENT: {
     //     id: 'exampleAchievement',
@@ -391,6 +413,115 @@ function track404Visit() {
 }
 
 // ========================================
+// DAILY VISIT STREAK ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track daily visit streak
+ * This should be called on every page load
+ */
+function trackDailyVisit() {
+    const today = new Date().toDateString(); // Get today's date as a string
+    const streakData = JSON.parse(localStorage.getItem('visitStreak') || '{"streak": 0, "lastVisit": null}');
+
+    // If this is the first visit ever
+    if (!streakData.lastVisit) {
+        streakData.streak = 1;
+        streakData.lastVisit = today;
+        localStorage.setItem('visitStreak', JSON.stringify(streakData));
+        return;
+    }
+
+    // If already visited today, don't increment
+    if (streakData.lastVisit === today) {
+        return;
+    }
+
+    // Check if visit is consecutive (yesterday)
+    const lastVisitDate = new Date(streakData.lastVisit);
+    const todayDate = new Date(today);
+    const diffTime = todayDate - lastVisitDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) {
+        // Consecutive day - increment streak
+        streakData.streak++;
+        streakData.lastVisit = today;
+        localStorage.setItem('visitStreak', JSON.stringify(streakData));
+
+        // Check if achievement should be pending
+        if (streakData.streak >= 7) {
+            const newlyPending = achievementManager.checkAchievements();
+            newlyPending.forEach(achievement => {
+                if (achievement.id === 'dedicated') {
+                    achievementManager.showAchievementBanner(achievement);
+                }
+            });
+        }
+    } else if (diffDays > 1) {
+        // Streak broken - reset to 1
+        streakData.streak = 1;
+        streakData.lastVisit = today;
+        localStorage.setItem('visitStreak', JSON.stringify(streakData));
+    }
+}
+
+/**
+ * Get daily visit streak progress
+ */
+function getDailyVisitProgress() {
+    const streakData = JSON.parse(localStorage.getItem('visitStreak') || '{"streak": 0, "lastVisit": null}');
+    const targetDays = 7;
+
+    return {
+        current: streakData.streak,
+        total: targetDays,
+        percentage: Math.min(Math.round((streakData.streak / targetDays) * 100), 100)
+    };
+}
+
+// ========================================
+// COASTER CLICKS ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track a coaster card click
+ * This should be called when a user clicks on a coaster card
+ */
+function trackCoasterClick(coasterIndex) {
+    const clickedCoasters = JSON.parse(localStorage.getItem('clickedCoasters') || '[]');
+
+    if (!clickedCoasters.includes(coasterIndex)) {
+        clickedCoasters.push(coasterIndex);
+        localStorage.setItem('clickedCoasters', JSON.stringify(clickedCoasters));
+
+        // Check if achievement should be pending
+        if (clickedCoasters.length >= 16) {
+            const newlyPending = achievementManager.checkAchievements();
+            newlyPending.forEach(achievement => {
+                if (achievement.id === 'educated') {
+                    achievementManager.showAchievementBanner(achievement);
+                }
+            });
+        }
+    }
+}
+
+/**
+ * Get coaster clicks progress
+ */
+function getCoasterClicksProgress() {
+    const clickedCoasters = JSON.parse(localStorage.getItem('clickedCoasters') || '[]');
+    const totalCoasters = 16;
+
+    return {
+        clicked: clickedCoasters.length,
+        total: totalCoasters,
+        percentage: Math.round((clickedCoasters.length / totalCoasters) * 100)
+    };
+}
+
+// ========================================
 // CELEBRATION PAGE HANDLER
 // ========================================
 
@@ -452,6 +583,10 @@ function resetAchievementProgress(achievementId) {
             localStorage.removeItem('devConsoleOpened');
         } else if (achievementId === 'notFound') {
             localStorage.removeItem('visited404');
+        } else if (achievementId === 'dedicated') {
+            localStorage.removeItem('visitStreak');
+        } else if (achievementId === 'educated') {
+            localStorage.removeItem('clickedCoasters');
         }
 
         // Redirect to home
@@ -474,6 +609,8 @@ function resetAllAchievements() {
         localStorage.removeItem('rainbowLoadingEnabled');
         localStorage.removeItem('devConsoleOpened');
         localStorage.removeItem('visited404');
+        localStorage.removeItem('visitStreak');
+        localStorage.removeItem('clickedCoasters');
         localStorage.removeItem('achievementUnlocked'); // Legacy support
 
         // Reload page to show updated state
@@ -563,6 +700,9 @@ window.achievementPageLoadTime = Date.now();
 // Automatically check achievements on page load and update nav link
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+        // Track daily visit for streak achievement
+        trackDailyVisit();
+
         // Check for new achievements
         const newlyPending = achievementManager.checkAchievements();
         newlyPending.forEach(achievement => {
@@ -583,6 +723,9 @@ if (document.readyState === 'loading') {
         updateRainbowLoadingClass();
     });
 } else {
+    // Track daily visit for streak achievement
+    trackDailyVisit();
+
     // Check for new achievements
     const newlyPending = achievementManager.checkAchievements();
     newlyPending.forEach(achievement => {
@@ -611,9 +754,14 @@ if (typeof module !== 'undefined' && module.exports) {
         trackThemeToggle,
         trackDevConsoleOpen,
         track404Visit,
+        trackDailyVisit,
+        trackCoasterClick,
         getLoadingTipProgress,
+        getDailyVisitProgress,
+        getCoasterClicksProgress,
         initCelebrationPage,
         resetAchievementProgress,
+        resetAllAchievements,
         updateAchievementNavLink,
         toggleRainbowText,
         isRainbowTextEnabled,
