@@ -62,11 +62,18 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+    visibility: hidden;
+}
+
+/* Ensure lightbox stays hidden during page load */
+.lightbox:not(.active) {
+    visibility: hidden !important;
 }
 
 .lightbox.active {
     opacity: 1;
     pointer-events: all;
+    visibility: visible;
 }
 
 [data-theme="dark"] .lightbox {
