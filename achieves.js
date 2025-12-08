@@ -747,11 +747,130 @@ function resetAllAchievements() {
         localStorage.removeItem('bigBoxExecuted');
         localStorage.removeItem('badVisionUnlocked');
         localStorage.removeItem('blurFilterEnabled');
+        localStorage.removeItem('editModeEnabled');
+        localStorage.removeItem('customCoasterOrder');
         localStorage.removeItem('achievementUnlocked'); // Legacy support
 
         // Reload page to show updated state
         window.location.reload();
     }
+}
+
+/**
+ * Export all achievements data to a JSON file
+ */
+function exportAchievements() {
+    const achievementData = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        achievements: {
+            unlockedAchievements: JSON.parse(localStorage.getItem('unlockedAchievements') || '[]'),
+            acknowledgedAchievements: JSON.parse(localStorage.getItem('acknowledgedAchievements') || '[]'),
+            pendingAchievements: JSON.parse(localStorage.getItem('pendingAchievements') || '[]')
+        },
+        progress: {
+            seenTips: JSON.parse(localStorage.getItem('seenTips') || '[]'),
+            themeToggles: localStorage.getItem('themeToggles') || '0',
+            devConsoleOpened: localStorage.getItem('devConsoleOpened') || 'false',
+            visited404: localStorage.getItem('visited404') || 'false',
+            visitStreak: JSON.parse(localStorage.getItem('visitStreak') || '{"streak": 0, "lastVisit": null}'),
+            clickedCoasters: JSON.parse(localStorage.getItem('clickedCoasters') || '[]'),
+            barrelRollExecuted: localStorage.getItem('barrelRollExecuted') || 'false',
+            bigBoxExecuted: localStorage.getItem('bigBoxExecuted') || 'false',
+            badVisionUnlocked: localStorage.getItem('badVisionUnlocked') || 'false'
+        },
+        preferences: {
+            rainbowTextEnabled: localStorage.getItem('rainbowTextEnabled') !== 'false',
+            rainbowLoadingEnabled: localStorage.getItem('rainbowLoadingEnabled') !== 'false',
+            blurFilterEnabled: localStorage.getItem('blurFilterEnabled') !== 'false',
+            editModeEnabled: localStorage.getItem('editModeEnabled') !== 'false',
+            customCoasterOrder: JSON.parse(localStorage.getItem('customCoasterOrder') || 'null')
+        }
+    };
+
+    // Convert to JSON string
+    const jsonString = JSON.stringify(achievementData, null, 2);
+
+    // Create blob and download
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `10desires-achievements-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('✅ Achievements exported successfully! Save this file to import on another device.');
+}
+
+/**
+ * Import achievements data from a JSON file
+ */
+function importAchievements() {
+    const fileInput = document.getElementById('import-file-input');
+    if (!fileInput) return;
+
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+
+                // Validate data structure
+                if (!data.version || !data.achievements || !data.progress || !data.preferences) {
+                    alert('❌ Invalid achievement file format.');
+                    return;
+                }
+
+                // Confirm import
+                if (!confirm('This will replace all current achievements with the imported data. Continue?')) {
+                    return;
+                }
+
+                // Import achievements
+                localStorage.setItem('unlockedAchievements', JSON.stringify(data.achievements.unlockedAchievements));
+                localStorage.setItem('acknowledgedAchievements', JSON.stringify(data.achievements.acknowledgedAchievements));
+                localStorage.setItem('pendingAchievements', JSON.stringify(data.achievements.pendingAchievements));
+
+                // Import progress
+                localStorage.setItem('seenTips', JSON.stringify(data.progress.seenTips));
+                localStorage.setItem('themeToggles', data.progress.themeToggles);
+                localStorage.setItem('devConsoleOpened', data.progress.devConsoleOpened);
+                localStorage.setItem('visited404', data.progress.visited404);
+                localStorage.setItem('visitStreak', JSON.stringify(data.progress.visitStreak));
+                localStorage.setItem('clickedCoasters', JSON.stringify(data.progress.clickedCoasters));
+                localStorage.setItem('barrelRollExecuted', data.progress.barrelRollExecuted);
+                localStorage.setItem('bigBoxExecuted', data.progress.bigBoxExecuted);
+                localStorage.setItem('badVisionUnlocked', data.progress.badVisionUnlocked);
+
+                // Import preferences
+                localStorage.setItem('rainbowTextEnabled', data.preferences.rainbowTextEnabled.toString());
+                localStorage.setItem('rainbowLoadingEnabled', data.preferences.rainbowLoadingEnabled.toString());
+                localStorage.setItem('blurFilterEnabled', data.preferences.blurFilterEnabled.toString());
+                localStorage.setItem('editModeEnabled', data.preferences.editModeEnabled.toString());
+                if (data.preferences.customCoasterOrder) {
+                    localStorage.setItem('customCoasterOrder', JSON.stringify(data.preferences.customCoasterOrder));
+                }
+
+                alert('✅ Achievements imported successfully! The page will now reload.');
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('❌ Error importing achievements. Please check the file and try again.');
+            }
+        };
+
+        reader.readAsText(file);
+    };
+
+    // Trigger file selection
+    fileInput.click();
 }
 
 // ========================================
@@ -1319,6 +1438,12 @@ if (typeof module !== 'undefined' && module.exports) {
         toggleEditMode,
         isEditModeEnabled,
         updateEditModeClass,
+        exportAchievements,
+        importAchievements,
         ACHIEVEMENTS
     };
 }
+
+// Make functions globally available for onclick handlers
+window.exportAchievements = exportAchievements;
+window.importAchievements = importAchievements;

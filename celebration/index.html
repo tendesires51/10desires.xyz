@@ -86,8 +86,14 @@
             </div>
 
             <div class="achievements-footer">
-                <button class="btn-secondary" onclick="resetAllAchievements()">Reset All Achievements</button>
+                <div class="achievements-actions">
+                    <button class="btn-primary" onclick="exportAchievements()">📤 Export</button>
+                    <button class="btn-primary" onclick="importAchievements()">📥 Import</button>
+                    <button class="btn-secondary" onclick="resetAllAchievements()">Reset All</button>
+                </div>
             </div>
+            <!-- Hidden file input for import -->
+            <input type="file" id="import-file-input" accept=".json" style="display: none;">
         </div>
     </section>
 
