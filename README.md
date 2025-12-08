@@ -1,1 +1,1 @@
-[Here.][10desires.xyz]
+[Here.](https://10desires.xyz)
