@@ -3,23 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Achievements — 10desires.xyz</title>
+    <title>Photos — 10desires.xyz</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../achieves.css">
     <link rel="stylesheet" href="../badvision.css">
+    <link rel="stylesheet" href="photos.css">
 </head>
 <body>
     <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="loading-content">
-            <h1 class="loading-logo">10desires</h1>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-            </div>
+            <div class="loading-spinner"></div>
             <p class="loading-tip"></p>
         </div>
     </div>
 
+    <!-- Achievement Banner -->
+    <div class="achievement-banner" id="achievement-banner" style="display: none;">
+        <div class="achievement-banner-content">
+            <span class="achievement-banner-icon"></span>
+            <div class="achievement-banner-text">
+                <p class="achievement-banner-title"></p>
+                <p class="achievement-banner-description"></p>
+            </div>
+            <button class="achievement-banner-button">GET</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
     <nav>
         <div class="nav-content">
             <a href="/" class="nav-logo">10desires</a>
@@ -60,60 +71,62 @@
 
     <!-- Hero Section -->
     <section class="hero hero-short">
-        <p class="hero-eyebrow">Secret Section</p>
-        <h1 class="hero-title hero-title-smaller">Achievements</h1>
-        <p class="hero-subtitle hero-subtitle-smaller">Track your progress and unlock special achievements.</p>
+        <p class="hero-eyebrow">Gallery</p>
+        <h1 class="hero-title hero-title-smaller">Photos</h1>
+        <p class="hero-subtitle hero-subtitle-smaller">A collection of moments captured.</p>
     </section>
 
-    <!-- Achievements Grid -->
-    <section class="achievements-section">
+    <!-- Photo Gallery -->
+    <section class="photo-section">
         <div class="section-container">
-            <div class="achievements-stats">
-                <div class="stat-item">
-                    <span class="stat-value" id="total-unlocked">0</span>
-                    <span class="stat-label">Unlocked</span>
+            <div class="photo-grid" id="photo-grid">
+                <div class="photo-item" data-index="0">
+                    <img src="https://cdn.10desires.xyz/IMG_0036.PNG" alt="Photo 1" loading="lazy">
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="total-achievements">0</span>
-                    <span class="stat-label">Total</span>
+                <div class="photo-item" data-index="1">
+                    <img src="https://cdn.10desires.xyz/IMG_0035.PNG" alt="Photo 2" loading="lazy">
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="completion-percentage">0%</span>
-                    <span class="stat-label">Complete</span>
+                <div class="photo-item" data-index="2">
+                    <img src="https://cdn.10desires.xyz/IMG_0032.jpg" alt="Photo 3" loading="lazy">
                 </div>
-            </div>
-
-            <div class="achievements-grid" id="achievements-grid">
-                <!-- Achievement cards will be dynamically inserted here -->
-            </div>
-
-            <div class="achievements-footer">
-                <div class="achievements-actions">
-                    <button class="btn-primary" onclick="exportAchievements()">📤 Export</button>
-                    <button class="btn-primary" onclick="importAchievements()">📥 Import</button>
-                    <button class="btn-secondary" onclick="resetAllAchievements()">Reset All</button>
+                <div class="photo-item" data-index="3">
+                    <img src="https://cdn.10desires.xyz/20251111_143220.jpg" alt="Photo 4" loading="lazy">
+                </div>
+                <div class="photo-item" data-index="4">
+                    <img src="https://cdn.10desires.xyz/20251024_125001.jpg" alt="Photo 5" loading="lazy">
                 </div>
             </div>
-            <!-- Hidden file input for import -->
-            <input type="file" id="import-file-input" accept=".json" style="display: none;">
         </div>
     </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" aria-label="Close lightbox">✕</button>
+        <button class="lightbox-prev" aria-label="Previous photo">‹</button>
+        <button class="lightbox-next" aria-label="Next photo">›</button>
+        <div class="lightbox-content">
+            <img src="" alt="Expanded photo" id="lightbox-img">
+            <div class="lightbox-counter">
+                <span id="current-photo">1</span> / <span id="total-photos">5</span>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <div class="footer-content">
             <div class="footer-links">
-                <a href="/">Home</a>
-                <a href="/gear">Gear</a>
-                <a href="/coasters">Coasters</a>
-                <a href="/music">Music</a>
+                <a href="https://www.10desires.xyz/">Home</a>
+                <a href="https://www.10desires.xyz/gear">Gear</a>
+                <a href="https://www.10desires.xyz/coasters">Coasters</a>
+                <a href="https://www.10desires.xyz/music">Music</a>
+                <a href="https://www.10desires.xyz/photos">Photos</a>
             </div>
-            <p class="footer-copyright">&copy; 2025 10desires.xyz / 10desires</p>
+            <p class="footer-copyright">© 2025 10desires.xyz / 10desires</p>
         </div>
     </footer>
 
-    <script src="../tips.js"></script>
     <script src="../main.js"></script>
     <script src="../achieves.js"></script>
-    <script src="celebration.js"></script>
+    <script src="photos.js"></script>
 </body>
 </html>
