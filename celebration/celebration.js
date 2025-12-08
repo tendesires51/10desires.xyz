@@ -55,7 +55,7 @@ function createAchievementCard(achievement, isUnlocked) {
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${progress.percentage}%"></div>
                     </div>
-                    <p class="progress-label">${progress.seen}/${progress.total} tips seen</p>
+                    <p class="progress-label">${progress.seen}/${progress.total} seen</p>
                 </div>
             `;
         } else if (achievement.id === 'epilepsyWarning') {
@@ -90,7 +90,7 @@ function createAchievementCard(achievement, isUnlocked) {
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${progress.percentage}%"></div>
                     </div>
-                    <p class="progress-label">${progress.clicked}/${progress.total} coasters clicked</p>
+                    <p class="progress-label">${progress.clicked}/${progress.total} clicked</p>
                 </div>
             `;
         }
