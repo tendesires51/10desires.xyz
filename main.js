@@ -347,24 +347,7 @@ document.addEventListener('keydown', (e) => {
     // Trigger the detector
     console.log('%c', devtools);
 
-    // Alternative detection methods
-    let devtoolsOpen = false;
-    const threshold = 160;
-
-    const detectDevTools = () => {
-        if (window.outerWidth - window.innerWidth > threshold ||
-            window.outerHeight - window.innerHeight > threshold) {
-            if (!devtoolsOpen && typeof trackDevConsoleOpen === 'function') {
-                trackDevConsoleOpen();
-                devtoolsOpen = true;
-            }
-        }
-    };
-
-    // Check on resize
-    window.addEventListener('resize', detectDevTools);
-
-    // Also detect F12 keypress
+    // Detect F12 keypress and keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.key === 'F12' ||
             (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
