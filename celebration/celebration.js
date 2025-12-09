@@ -142,6 +142,17 @@ function createAchievementCard(achievement, isUnlocked) {
                 <span class="toggle-label">Edit Mode</span>
             </div>
         `;
+    } else if (isUnlocked && achievement.id === 'payRespects') {
+        const isEnabled = typeof isFEmojiEnabled === 'function' ? isFEmojiEnabled() : true;
+        toggleHTML = `
+            <div class="achievement-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="f-emoji-toggle" ${isEnabled ? 'checked' : ''}>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">F Emoji Replacement</span>
+            </div>
+        `;
     }
 
     card.innerHTML = `
@@ -213,6 +224,21 @@ function createAchievementCard(achievement, isUnlocked) {
                     e.stopPropagation(); // Prevent card click event
                     if (typeof toggleEditMode === 'function') {
                         toggleEditMode();
+                    }
+                });
+            }
+        }, 0);
+    } else if (isUnlocked && achievement.id === 'payRespects') {
+        setTimeout(() => {
+            const toggle = card.querySelector('#f-emoji-toggle');
+            if (toggle) {
+                // Ensure toggle reflects current state
+                toggle.checked = typeof isFEmojiEnabled === 'function' ? isFEmojiEnabled() : true;
+
+                toggle.addEventListener('change', (e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    if (typeof toggleFEmoji === 'function') {
+                        toggleFEmoji();
                     }
                 });
             }

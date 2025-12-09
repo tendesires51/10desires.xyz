@@ -104,6 +104,26 @@ const ACHIEVEMENTS = {
             return localStorage.getItem('badVisionUnlocked') === 'true';
         }
     },
+    BLASPHEMY: {
+        id: 'blasphemy',
+        name: 'Blasphemy!',
+        description: 'Attempted to drag Iron Gwazi to last place',
+        icon: '😱',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('blasphemyCommitted') === 'true';
+        }
+    },
+    PAY_RESPECTS: {
+        id: 'payRespects',
+        name: 'Press F to Pay Respects',
+        description: 'Pressed F to pay respects',
+        icon: '🫡',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('payRespects') === 'true';
+        }
+    },
     // Add more achievements here:
     // EXAMPLE_ACHIEVEMENT: {
     //     id: 'exampleAchievement',
@@ -575,6 +595,50 @@ function trackBarrelRoll() {
 }
 
 // ========================================
+// BLASPHEMY ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track blasphemy event
+ * This should be called when the user attempts to drag Iron Gwazi to last place
+ */
+function trackBlasphemy() {
+    if (localStorage.getItem('blasphemyCommitted') !== 'true') {
+        localStorage.setItem('blasphemyCommitted', 'true');
+
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            if (achievement.id === 'blasphemy') {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        });
+    }
+}
+
+// ========================================
+// PAY RESPECTS ACHIEVEMENT TRACKING
+// ========================================
+
+/**
+ * Track pay respects event
+ * This should be called when the user presses F to pay respects
+ */
+function trackPayRespects() {
+    if (localStorage.getItem('payRespects') !== 'true') {
+        localStorage.setItem('payRespects', 'true');
+
+        // Check if achievement should be pending
+        const newlyPending = achievementManager.checkAchievements();
+        newlyPending.forEach(achievement => {
+            if (achievement.id === 'payRespects') {
+                achievementManager.showAchievementBanner(achievement);
+            }
+        });
+    }
+}
+
+// ========================================
 // BIG BOX ACHIEVEMENT TRACKING
 // ========================================
 
@@ -714,6 +778,10 @@ function resetAchievementProgress(achievementId) {
             localStorage.removeItem('clickedCoasters');
         } else if (achievementId === 'barrelRoll') {
             localStorage.removeItem('barrelRollExecuted');
+        } else if (achievementId === 'blasphemy') {
+            localStorage.removeItem('blasphemyCommitted');
+        } else if (achievementId === 'payRespects') {
+            localStorage.removeItem('payRespects');
         } else if (achievementId === 'bigBox') {
             localStorage.removeItem('bigBoxExecuted');
         } else if (achievementId === 'badVision') {
@@ -744,6 +812,8 @@ function resetAllAchievements() {
         localStorage.removeItem('visitStreak');
         localStorage.removeItem('clickedCoasters');
         localStorage.removeItem('barrelRollExecuted');
+        localStorage.removeItem('blasphemyCommitted');
+        localStorage.removeItem('payRespects');
         localStorage.removeItem('bigBoxExecuted');
         localStorage.removeItem('badVisionUnlocked');
         localStorage.removeItem('blurFilterEnabled');
@@ -871,6 +941,55 @@ function importAchievements() {
 
     // Trigger file selection
     fileInput.click();
+}
+
+// ========================================
+// F EMOJI REPLACEMENT (Pay Respects Achievement)
+// ========================================
+
+/**
+ * Check if F emoji replacement should be enabled
+ */
+function isFEmojiEnabled() {
+    const isUnlocked = achievementManager.isUnlocked('payRespects');
+    const isEnabled = localStorage.getItem('fEmojiEnabled') !== 'false'; // default true when unlocked
+    return isUnlocked && isEnabled;
+}
+
+/**
+ * Toggle F emoji replacement on/off
+ */
+function toggleFEmoji() {
+    const current = localStorage.getItem('fEmojiEnabled') !== 'false';
+    localStorage.setItem('fEmojiEnabled', (!current).toString());
+
+    // Reload page to apply/remove changes
+    window.location.reload();
+}
+
+/**
+ * Apply F emoji replacement to the page
+ */
+function applyFEmojiReplacement() {
+    const walkTextNodes = (node) => {
+        if (node.nodeType === 3) { // Text node
+            const originalText = node.nodeValue;
+            const newText = originalText.replace(/F/g, '🇫').replace(/f/g, '🇫');
+            if (originalText !== newText) {
+                node.nodeValue = newText;
+            }
+        } else {
+            // Skip script, style, and input elements
+            if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE' &&
+                node.tagName !== 'INPUT' && node.tagName !== 'TEXTAREA') {
+                for (let child of node.childNodes) {
+                    walkTextNodes(child);
+                }
+            }
+        }
+    };
+
+    walkTextNodes(document.body);
 }
 
 // ========================================
@@ -1085,6 +1204,41 @@ function handleDrop(e) {
         const allCards = Array.from(coasterList.querySelectorAll('.coaster-card'));
         const draggedIndex = allCards.indexOf(draggedElement);
         const targetIndex = allCards.indexOf(this);
+
+        // Check if Iron Gwazi is being dragged to last place
+        const draggedName = draggedElement.querySelector('.coaster-name')?.textContent;
+        const isIronGwazi = draggedName === 'Iron Gwazi';
+        const totalCards = allCards.length;
+
+        // Check if target position would be last (position 16)
+        let wouldBeLastPosition = false;
+        if (draggedIndex < targetIndex) {
+            // Dragging down - would be last if target is the last card
+            wouldBeLastPosition = (targetIndex === totalCards - 1);
+        } else {
+            // Dragging up - would be last if target is the last card
+            wouldBeLastPosition = (targetIndex === totalCards - 1);
+        }
+
+        // BLASPHEMY DETECTED!
+        if (isIronGwazi && wouldBeLastPosition) {
+            // Track the achievement
+            if (typeof trackBlasphemy === 'function') {
+                trackBlasphemy();
+            }
+
+            // Move Iron Gwazi back to the top instead
+            coasterList.insertBefore(draggedElement, allCards[0]);
+
+            // Show a message in console
+            console.log('😱 BLASPHEMY! Iron Gwazi refuses to be ranked last and returns to the top!');
+
+            // Update rank numbers
+            updateCoasterRanks();
+            saveCustomCoasterOrder();
+
+            return false;
+        }
 
         if (draggedIndex < targetIndex) {
             this.parentNode.insertBefore(draggedElement, this.nextSibling);
@@ -1369,6 +1523,11 @@ if (document.readyState === 'loading') {
         updateBlurFilterClass();
         updateEditModeClass();
 
+        // Apply F emoji replacement if enabled
+        if (typeof isFEmojiEnabled === 'function' && isFEmojiEnabled()) {
+            applyFEmojiReplacement();
+        }
+
         // Add event listener for share ranking button
         const shareBtn = document.getElementById('share-ranking-btn');
         if (shareBtn) {
@@ -1400,6 +1559,11 @@ if (document.readyState === 'loading') {
     updateBlurFilterClass();
     updateEditModeClass();
 
+    // Apply F emoji replacement if enabled
+    if (typeof isFEmojiEnabled === 'function' && isFEmojiEnabled()) {
+        applyFEmojiReplacement();
+    }
+
     // Add event listener for share ranking button
     const shareBtn = document.getElementById('share-ranking-btn');
     if (shareBtn) {
@@ -1418,6 +1582,8 @@ if (typeof module !== 'undefined' && module.exports) {
         trackDailyVisit,
         trackCoasterClick,
         trackBarrelRoll,
+        trackBlasphemy,
+        trackPayRespects,
         trackBigBox,
         getLoadingTipProgress,
         getDailyVisitProgress,
@@ -1431,6 +1597,9 @@ if (typeof module !== 'undefined' && module.exports) {
         updateRainbowTextClass,
         toggleRainbowLoading,
         isRainbowLoadingEnabled,
+        toggleFEmoji,
+        isFEmojiEnabled,
+        applyFEmojiReplacement,
         updateRainbowLoadingClass,
         toggleBlurFilter,
         isBlurFilterEnabled,

@@ -280,6 +280,57 @@ window.igotabigboxyesido = function() {
 console.log('%c💡 Tip: Try typing "doabarrelroll()" in the console!', 'color: #0071e3; font-size: 12px;');
 
 // ========================================
+// PRESS F TO PAY RESPECTS
+// ========================================
+
+/**
+ * Replace all F's on the page with regional indicator F emoji
+ */
+function replaceAllFsWithEmoji() {
+    const walkTextNodes = (node) => {
+        if (node.nodeType === 3) { // Text node
+            const originalText = node.nodeValue;
+            const newText = originalText.replace(/F/g, '🇫').replace(/f/g, '🇫');
+            if (originalText !== newText) {
+                node.nodeValue = newText;
+            }
+        } else {
+            // Skip script, style, and input elements
+            if (node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE' &&
+                node.tagName !== 'INPUT' && node.tagName !== 'TEXTAREA') {
+                for (let child of node.childNodes) {
+                    walkTextNodes(child);
+                }
+            }
+        }
+    };
+
+    walkTextNodes(document.body);
+    console.log('🇫 All F\'s have been replaced with regional indicator F emoji!');
+}
+
+// Listen for F key press
+document.addEventListener('keydown', (e) => {
+    // Check if F key is pressed (not in an input field or textarea)
+    if (e.key === 'f' || e.key === 'F') {
+        const activeElement = document.activeElement;
+        const isInputField = activeElement.tagName === 'INPUT' ||
+                            activeElement.tagName === 'TEXTAREA' ||
+                            activeElement.isContentEditable;
+
+        // Only trigger if not typing in an input field
+        if (!isInputField) {
+            // Track achievement (only once)
+            if (typeof trackPayRespects === 'function') {
+                trackPayRespects();
+            }
+
+            console.log('🫡 Respects paid.');
+        }
+    }
+});
+
+// ========================================
 // DEVELOPER CONSOLE DETECTOR
 // ========================================
 
