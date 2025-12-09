@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to the Blog  10desires.xyz</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../achieves.css">
+    <link rel="stylesheet" href="../../badvision.css">
+    <link rel="stylesheet" href="entry.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-content">
+            <h1 class="loading-logo">10desires</h1>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-tip"></p>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-content">
+            <a href="/" class="nav-logo">10desires</a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="/gear">Gear</a></li>
+                    <li><a href="/coasters">Coasters</a></li>
+                    <li><a href="/music">Music</a></li>
+                    <li><a href="/photos">Photos</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/celebration" id="secret-link">???</a></li>
+                </ul>
+                <button class="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="moon-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+                    </svg>
+                    <svg class="sun-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu">
+        <ul>
+            <li><a href="/gear">Gear</a></li>
+            <li><a href="/coasters">Coasters</a></li>
+            <li><a href="/music">Music</a></li>
+            <li><a href="/photos">Photos</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/celebration" id="secret-link-mobile">???</a></li>
+        </ul>
+    </div>
+
+    <!-- Entry Container -->
+    <div class="entry-container" data-entry data-title="Welcome to the Blog" data-date="December 8, 2025" data-excerpt="The first post on this new blog system. Let me explain how this all works and what you can expect to see here." data-tags="meta, updates, announcement">
+        <a href="../" class="back-to-blog">&larr; Back to Blog</a>
+
+        <div class="entry-meta">
+            <span class="entry-meta-number">#1</span>
+            <span class="entry-meta-date">December 8, 2025</span>
+        </div>
+
+        <article class="entry-content">
+            <h1>Welcome to the Blog</h1>
+
+            <p>Hey there! Welcome to the first post on this new blog system. I built this to have a place to share random thoughts, project updates, and whatever else I feel like writing about.</p>
+
+            <h2>How This Works</h2>
+
+            <p>The blog system is pretty simple but clever. Instead of using a database or complex CMS, it just automatically discovers HTML files in the entries folder. Each entry is a standalone HTML file named <code>entry1.html</code>, <code>entry2.html</code>, and so on.</p>
+
+            <p>The blog index page uses JavaScript to scan for these files and automatically display them in a nice grid layout. When you click "Read More," you get the full entry with some nice enhancements like:</p>
+
+            <ul>
+                <li>Automatic table of contents (if there are 3+ headers)</li>
+                <li>Reading progress bar at the top</li>
+                <li>Copy buttons on code blocks</li>
+                <li>External link indicators</li>
+                <li>Smooth scrolling</li>
+            </ul>
+
+            <h2>Metadata</h2>
+
+            <p>Each entry can include metadata using data attributes on the main container:</p>
+
+            <pre><code>&lt;div class="entry-container"
+     data-entry
+     data-title="Your Title Here"
+     data-date="December 8, 2025"
+     data-excerpt="A short preview..."
+     data-tags="tag1, tag2, tag3"&gt;
+    &lt;!-- content here --&gt;
+&lt;/div&gt;</code></pre>
+
+            <h2>What to Expect</h2>
+
+            <p>I'll be using this space for various things:</p>
+
+            <ul>
+                <li>Updates about projects on this site</li>
+                <li>Tech stuff I'm working on</li>
+                <li>Random thoughts about coasters, music, gear, etc.</li>
+                <li>Tutorials or guides if I feel like it</li>
+            </ul>
+
+            <p>No schedule, no promises, just whatever feels right. That's the beauty of a personal site!</p>
+
+            <h2>Try It Yourself</h2>
+
+            <p>If you want to build something similar, feel free to check out the source code. It's all just HTML, CSS, and vanilla JavaScript. No build tools, no frameworks, no nonsense.</p>
+
+            <p>The whole system is about 150 lines of JavaScript and works entirely client-side. Pretty cool, right?</p>
+
+            <h3>Final Thoughts</h3>
+
+            <p>Anyway, that's it for the first post. Just wanted to get something up here to test the system and explain how it works. More interesting stuff coming soon (probably).</p>
+
+            <p>Thanks for reading!</p>
+        </article>
+
+        <div class="entry-footer">
+            <a href="../" class="back-to-blog">&larr; Back to Blog</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/gear">Gear</a>
+                <a href="/coasters">Coasters</a>
+                <a href="/music">Music</a>
+                <a href="/blog">Blog</a>
+            </div>
+            <p class="footer-copyright">� 2025 10desires.xyz / 10desires</p>
+        </div>
+    </footer>
+
+    <script src="../../tips.js"></script>
+    <script src="../../main.js"></script>
+    <script src="../../achieves.js"></script>
+    <script src="entry.js"></script>
+</body>
+</html>
