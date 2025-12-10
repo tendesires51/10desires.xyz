@@ -8,6 +8,16 @@
 // ========================================
 
 const ACHIEVEMENTS = {
+    THE_FIRST_ONES_ALWAYS_FREE: {
+        id: 'theFirstOnesAlwaysFree',
+        name: 'The First One\'s Always Free',
+        description: 'Clicked on this achievement card',
+        icon: '🎁',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('theFirstOnesAlwaysFree') === 'true';
+        }
+    },
     LOADING_TIPS_MASTER: {
         id: 'loadingTipsMaster',
         name: 'Refresh Ranger',
@@ -122,6 +132,16 @@ const ACHIEVEMENTS = {
         unlockPage: '/celebration',
         checkCondition: () => {
             return localStorage.getItem('payRespects') === 'true';
+        }
+    },
+    THE_LAST_ONES_NEVER_FREE: {
+        id: 'theLastOnesNeverFree',
+        name: 'The Last One\'s Never Free',
+        description: 'Unlocked every achievement except the first one, then clicked this card',
+        icon: '🏆',
+        unlockPage: '/celebration',
+        checkCondition: () => {
+            return localStorage.getItem('theLastOnesNeverFree') === 'true';
         }
     },
     // Add more achievements here:
@@ -782,6 +802,10 @@ function resetAchievementProgress(achievementId) {
             localStorage.removeItem('blasphemyCommitted');
         } else if (achievementId === 'payRespects') {
             localStorage.removeItem('payRespects');
+        } else if (achievementId === 'theFirstOnesAlwaysFree') {
+            localStorage.removeItem('theFirstOnesAlwaysFree');
+        } else if (achievementId === 'theLastOnesNeverFree') {
+            localStorage.removeItem('theLastOnesNeverFree');
         } else if (achievementId === 'bigBox') {
             localStorage.removeItem('bigBoxExecuted');
         } else if (achievementId === 'badVision') {
@@ -814,6 +838,8 @@ function resetAllAchievements() {
         localStorage.removeItem('barrelRollExecuted');
         localStorage.removeItem('blasphemyCommitted');
         localStorage.removeItem('payRespects');
+        localStorage.removeItem('theFirstOnesAlwaysFree');
+        localStorage.removeItem('theLastOnesNeverFree');
         localStorage.removeItem('bigBoxExecuted');
         localStorage.removeItem('badVisionUnlocked');
         localStorage.removeItem('blurFilterEnabled');
