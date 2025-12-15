@@ -245,6 +245,78 @@ function createAchievementCard(achievement, isUnlocked) {
         }, 0);
     }
 
+    // Special handling for "The First One's Always Free" - unlock on click
+    if (achievement.id === 'theFirstOnesAlwaysFree' && !isUnlocked) {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            // Don't trigger if clicking on toggle
+            if (e.target.closest('.achievement-toggle')) {
+                return;
+            }
+
+            // Unlock the achievement
+            localStorage.setItem('theFirstOnesAlwaysFree', 'true');
+            const newlyPending = achievementManager.checkAchievements();
+
+            // Show banner
+            if (newlyPending.length > 0) {
+                achievementManager.showAchievementBanner(ACHIEVEMENTS.THE_FIRST_ONES_ALWAYS_FREE);
+            }
+
+            // Refresh the page to show the unlocked state
+            location.reload();
+        });
+    }
+
+    // Special handling for "The Last One's Never Free" - unlock on click if requirements met
+    if (achievement.id === 'theLastOnesNeverFree' && !isUnlocked) {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            // Don't trigger if clicking on toggle
+            if (e.target.closest('.achievement-toggle')) {
+                return;
+            }
+
+            // Check if all achievements except "The First One's Always Free" and this one are unlocked
+            const unlockedAchievements = achievementManager.getUnlockedAchievements();
+            const allAchievements = Object.values(ACHIEVEMENTS);
+
+            // Must NOT have "The First One's Always Free"
+            const hasFirstFree = unlockedAchievements.includes('theFirstOnesAlwaysFree');
+            if (hasFirstFree) {
+                console.log('❌ You cannot unlock this if you have "The First One\'s Always Free"!');
+                return;
+            }
+
+            // Filter out "The First One's Always Free" and "The Last One's Never Free"
+            const requiredAchievements = allAchievements.filter(a =>
+                a.id !== 'theFirstOnesAlwaysFree' && a.id !== 'theLastOnesNeverFree'
+            );
+
+            const requiredUnlocked = unlockedAchievements.filter(id =>
+                id !== 'theFirstOnesAlwaysFree' && id !== 'theLastOnesNeverFree'
+            );
+
+            // Check if user has all required achievements
+            if (requiredUnlocked.length === requiredAchievements.length) {
+                // Unlock the achievement
+                localStorage.setItem('theLastOnesNeverFree', 'true');
+                const newlyPending = achievementManager.checkAchievements();
+
+                // Show banner
+                if (newlyPending.length > 0) {
+                    achievementManager.showAchievementBanner(ACHIEVEMENTS.THE_LAST_ONES_NEVER_FREE);
+                }
+
+                // Refresh the page to show the unlocked state
+                location.reload();
+            } else {
+                // Optional: Show a message that requirements aren't met
+                console.log('You need to unlock all other achievements (except The First One\'s Always Free) first!');
+            }
+        });
+    }
+
     // Make unlocked cards clickable if they have an unlock page
     if (isUnlocked && achievement.unlockPage) {
         card.style.cursor = 'pointer';
